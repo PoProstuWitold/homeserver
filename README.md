@@ -1,1 +1,68 @@
 # Homeserver
+
+Welcome to my home server guide! Here, you'll find easy-to-follow steps to set up your own server at home using ***Linux***, ***Docker***, and all without the need for ***port-forwarding***, as many ISPs don't allow it. Please note, some parts of this guide are based on my personal preferences (e.g., the Linux distro), and your setup for certain things may slightly differ. Let's begin, shall we?
+
+## Goals & Features
+After following this tutorial you will have:
+- Secure access to your locally hosted services using [tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/).
+- Remote access to your server by [VNC](https://en.wikipedia.org/wiki/Virtual_Network_Computing) and [SSH](https://en.wikipedia.org/wiki/Secure_Shell) from any device you want.
+- Shared folders using [Samba](https://en.wikipedia.org/wiki/Samba_(software)).
+- Preconfigured, isolated & selfhosted cloud, media server, dashboard and "service managment center" using Docker and Portainer and as many more as you want.
+
+## 0. Things to consider & Requirements
+Remember that your server is likely going to run 24/7, so keep in mind the energy consumption of your workstation and its noise. You can use your old PC, [Raspberry Pi 4](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/), or some mini PC (I recommend some older, used HP, Dell, Lenovo, or Intel NUC models). In this guide, I will be using an **[Intel NUC11TNHI5](https://www.intel.com/content/www/us/en/products/sku/205594/intel-nuc-11-pro-kit-nuc11tnhi5/specifications.html)** with 32GB RAM and a 2TB SSD, as it only consumes 28W of energy. It's not necessary to buy exactly the same hardware as mine to follow this tutorial.
+
+In terms of hardware, here are my recommendations:
+- **CPU**: at least 9th generation Intel Core i3 or i5 or AMD equivalent; 4+ cores.
+- **GPU**: don't run a server with a GPU, as you won't need it and it will significantly increase energy consumption.
+- **RAM**: I recommend a minimum of 8GB. If you're going to run lots of services, then 16GB or even 32GB may be necessary, especially if you want to run game servers. In 90% of cases, 64GB is overkill, but if you can afford it, it's available.
+- **STORAGE**: I recommend either going full SSD (at least 512GB) or using an SSD for the OS (128GB or 256GB) and an HDD (min. 512GB) for data. SSDs are more energy-efficient but also more expensive.
+
+### All Requirements
+To fully follow this tutorial you need:
+- Your own domain.
+- A Cloudflare account.
+- A workstation where the server will be running.
+
+
+## 1. Update BIOS and Install Your Preferred Linux Distribution
+This step will be different depending on your hardware. Just google "bios download" and your hardware.
+
+For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but you can use any Arch-based distro (e.g., Manjaro, Garuda, or plain Arch) to essentially copy-paste commands. I chose EndeavourOS, because it comes with some useful stuff (that I will eventually need) installed and already configured and it has ISOs with many DE (KDE Plasma, Gnome, Xfce4 and more). If you opt for a non-Arch-based distro, you will need to find equivalent instructions for your chosen distribution.
+
+- ### 1a. Update your system
+	If you are using EndeavourOS just run ``yay`` in your terminal and type ``sudo`` password. For other distros find equivalent instructions.
+
+- ### 1b. Turn off auto-sleep
+	This depends on your graphical enviroment. Just google how to do that. It shouldn't be complicated (usually 4-5 clicks or some commands).
+
+- ### 1c. Change shell (optional)
+	This is just my preferance. You can completely ignore that step.
+
+	Change your default shell to [zsh](https://www.zsh.org/) and enable plugins wiht [oh-my-zsh](https://ohmyz.sh/)
+
+### 2. Remote connection
+TO DO
+Setup VNC and SSH to remote access your soon-to-be headless server.
+
+### 3. Docker & Docker Compose
+TO DO
+Setup Docker with Docker Compose and add your user to "docker" group.
+
+### 4. Network & Firewall
+TO DO
+Prepare your network for external traffic.
+
+### 5. Shared folders
+TO DO
+Setup Samba for creating shared folders in your network.
+
+### 5. Tunnels & Services
+TO DO
+Setup Portainer with Cloudflare Tunnels to allow access to your services outside your home network, then add as many services as you want.
+
+- ### 5a. Services
+	Here are details for setting some services. You can find all configs in [services](services) folder. Paste all of them in Portainer.
+	- **Cloudflare**: setup Cloudflare Tunnels
+	- **NextCloud**: setup NextCloud
+	- **Jellyfin**: setup Jellyfin
