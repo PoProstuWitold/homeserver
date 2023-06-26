@@ -1,0 +1,44 @@
+# NextCloud
+Regain control over your data
+
+Remember to change: ``MYSQL_ROOT_PASSWORD``, ``MYSQL_PASSWORD`` in ``db`` container and ``MYSQL_PASSWORD`` in ``app`` container.
+
+``docker-compose.yml``
+```yaml
+version: "3.8"
+
+volumes:
+  nextcloud:
+  db:
+
+services:
+  db:
+    image: mariadb:latest
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - /home/docker/nextcloud/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=changeme
+      - MYSQL_PASSWORD=changeme
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  app:
+    image: nextcloud:latest
+    restart: always
+    ports:
+      - 8080:80
+    links:
+      - db
+    depends_on:
+      - db
+    volumes:
+      - /home/docker/nextcloud/nextcloud:/var/www/html
+      - /home/docker/nextcloud/etc/localtime:/etc/localtime:ro
+    environment:
+      - MYSQL_PASSWORD=changeme
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
+```

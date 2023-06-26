@@ -1,0 +1,7 @@
+version: "3.8"
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token random-token
+    restart: unless-stopped
