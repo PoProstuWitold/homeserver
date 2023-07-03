@@ -42,12 +42,53 @@ For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but yo
 	Change your default shell to [zsh](https://www.zsh.org/) and enable plugins wiht [oh-my-zsh](https://ohmyz.sh/)
 
 ### 2. Remote connection
-TO DO
 Setup VNC and SSH to remote access your soon-to-be headless server.
+1. Install RealVNC Client on your client (in my case Windows 11 Home)
+2. Install RealVNC Server on your server:
+```bash
+yay -S realvnc-vnc-server
+```
+```bash
+sudo systemctl enable vncserver-x11-serviced
+```
+```bash
+sudo systemctl start vncserver-x11-serviced
+```
+after you do this login to your RealVNC account on RealVNC Server. Make sure you check ``SHA-256`` encryption.
+Reboot and boom! You have encrypted VNC connection!
 
 ### 3. Docker & Docker Compose
-TO DO
 Setup Docker with Docker Compose and add your user to "docker" group.
+#### 3.1. Install Docker and add user to "docker" group
+```bash
+yay -S docker
+```
+```bash
+sudo usermod -aG docker $USER
+```
+```bash
+newgrp docker
+```
+```bash
+sudo systemctl enable docker
+```
+```bash
+sudo systemctl start docker
+```
+#### 3.2 Install ``compose`` plugin
+> Visit offical [docker](https://docs.docker.com/compose/install/linux) website for instructions for your distribution
+```bash
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+```
+```bash
+mkdir -p $DOCKER_CONFIG/cli-plugins
+```
+```bash
+curl -SL https://github.com/docker/compose/releases/download/v2.19.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+```
+```bash
+chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+```
 
 ### 4. Network & Firewall
 TO DO
