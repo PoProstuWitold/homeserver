@@ -95,8 +95,76 @@ TO DO
 Prepare your network for external traffic.
 
 ### 5. Shared folders
-TO DO
-Setup Samba for creating shared folders in your network.
+First, install ``Samba`` package:
+```bash
+yay -S samba
+```
+
+As ``Samba`` doesn't come with config file, we need to create one. I will use official config file from Samba [repository](https://git.samba.org/samba.git/?p=samba.git;a=blob_plain;f=examples/smb.conf.default;hb=HEAD).
+Paste this config here:
+```bash
+sudo nano /etc/samba/smb.conf
+```
+In the section ``[global]`` change ``workgroup`` to following:
+```bash
+workgroup = WORKGROUP
+```
+so it will match Windows's default one.
+
+#### 5.1 Configure firewall
+In order to access your samba share from other computers, you must change your firewall's setting:
+```bash
+firewall-cmd --permanent --zone=public --add-service=samba
+```
+```bash
+firewall-cmd --reload
+```
+```bash
+systemctl enable --now smb.service
+```
+```bash
+systemctl enable --now nmb.service
+```
+
+#### 5.2 Samba group
+Create ``sambausers`` group and add yourself to it:
+```bash
+sudo groupadd -r sambausers
+```
+```bash
+sudo usermod -aG sambausers YOURUSERNAME
+```
+Create samba password for your shares:
+```bash
+sudo smbpasswd -a YOURUSERNAME
+```
+
+#### 5.3 Example share
+I will use my ``Jellyfin`` library as example yet practical share.
+
+Scroll to the bottom and add:
+```bash
+[Jellyfin]
+comment = Jellyfin's media
+path = /home/docker/jellyfin/media
+writable = yes
+browsable = yes
+create mask = 0700
+directory mask = 0700
+read only = no
+guest ok = no
+```
+
+> At this point make sure that directory you specified in share's path actually exists! If not run [Jellyfin](services/jellyfin) service or create it: ``sudo mkdir /home/docker/jellyfin/media``
+
+Change directory ownership and permissions:
+```bash
+sudo chown -R :sambausers /home/docker/jellyfin/media
+```
+```bash
+sudo chmod 1770 /home/docker/jellyfin/media
+```
+
 
 ### 5. Tunnels & Services
 TO DO
