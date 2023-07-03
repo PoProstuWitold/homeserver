@@ -34,68 +34,82 @@ For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but yo
 	If you are using EndeavourOS just run ``yay`` in your terminal and type ``sudo`` password. For other distros find equivalent instructions.
 
 - ### 1b. Turn off auto-sleep
-	This depends on your graphical enviroment. Just google how to do that. It shouldn't be complicated (usually 4-5 clicks or some commands).
+	This depends of your distribution and your graphical enviroment. Just google how to do that. It shouldn't be complicated.
 
 - ### 1c. Change shell (optional)
 	This is just my preferance. You can completely ignore that step.
 
 	Change your default shell to [zsh](https://www.zsh.org/) and enable plugins wiht [oh-my-zsh](https://ohmyz.sh/)
 
-### 2. Remote connection
+## 2. Remote connection
 Setup VNC and SSH to remote access your soon-to-be headless server.
-1. Install RealVNC Client on your client (in my case Windows 11 Home)
-2. Install RealVNC Server on your server:
-```bash
-yay -S realvnc-vnc-server
-```
-```bash
-sudo systemctl enable vncserver-x11-serviced
-```
-```bash
-sudo systemctl start vncserver-x11-serviced
-```
-after you do this login to your RealVNC account on RealVNC Server. Make sure you check ``SHA-256`` encryption.
-Reboot and boom! You have encrypted VNC connection!
+- ### 2a. VNC
+  
+	- 1. Install [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/) on your client (in my case Windows 11 Home).
+	- 2. Install RealVNC Server on your server:
 
-### 3. Docker & Docker Compose
+	```bash
+	yay -S realvnc-vnc-server
+	```
+	```bash
+	sudo systemctl enable vncserver-x11-serviced
+	```
+	```bash
+	sudo systemctl start vncserver-x11-serviced
+	```
+ 
+	After you do this, login to your RealVNC account on RealVNC Server. Make sure you check ``SHA-256`` encryption.
+	Reboot and boom! You have encrypted VNC connection!
+- ### 2b. SSH
+  	Install ``SSH`` and connect to it.
+
+## 3. Docker & Docker Compose
 Setup Docker with Docker Compose and add your user to "docker" group.
-#### 3.1. Install Docker and add user to "docker" group
-```bash
-yay -S docker
-```
-```bash
-sudo usermod -aG docker $USER
-```
-```bash
-newgrp docker
-```
-```bash
-sudo systemctl enable docker
-```
-```bash
-sudo systemctl start docker
-```
-#### 3.2 Install ``compose`` plugin
-> Visit offical [docker](https://docs.docker.com/compose/install/linux) website for instructions for your distribution
-```bash
-DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-```
-```bash
-mkdir -p $DOCKER_CONFIG/cli-plugins
-```
-```bash
-curl -SL https://github.com/docker/compose/releases/download/v2.19.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-```
-```bash
-chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-```
+- ### 3.1. Install Docker and add user to "docker" group
+	```bash
+	yay -S docker
+	```
+	```bash
+	sudo usermod -aG docker $USER
+	```
+	```bash
+	newgrp docker
+	```
+	```bash
+	sudo systemctl enable docker
+	```
+	```bash
+	sudo systemctl start docker
+	```
+- ### 3.2 Install ``compose`` plugin
+	> Visit offical [docker](https://docs.docker.com/compose/install/linux) website for instructions for your distribution
+	```bash
+	DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+	```
+	```bash
+	mkdir -p $DOCKER_CONFIG/cli-plugins
+	```
+	```bash
+	curl -SL https://github.com/docker/compose/releases/download/v2.19.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+	```
+	```bash
+	chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+	```
 
 ### 4. Network & Firewall
-TO DO
-Prepare your network for external traffic.
+Install and enable firewall to prevent common attacks:
+```bash
+yay -S firewalld
+```
+```bash
+sudo systemctl enable firewalld.service
+```
+```bash
+sudo systemctl start firewalld.service
+```
 
 ### 5. Shared folders
-First, install ``Samba`` package:
+Install ``Samba`` package:
 ```bash
 yay -S samba
 ```
@@ -111,67 +125,66 @@ workgroup = WORKGROUP
 ```
 so it will match Windows's default one.
 
-#### 5.1 Configure firewall
-In order to access your samba share from other computers, you must change your firewall's setting:
-```bash
-firewall-cmd --permanent --zone=public --add-service=samba
-```
-```bash
-firewall-cmd --reload
-```
-```bash
-systemctl enable --now smb.service
-```
-```bash
-systemctl enable --now nmb.service
-```
+- ### 5.1 Configure firewall
+	In order to access your samba share from other computers, you must change your firewall's setting:
+	```bash
+	firewall-cmd --permanent --zone=public --add-service=samba
+	```
+	```bash
+	firewall-cmd --reload
+	```
+	```bash
+	systemctl enable --now smb.service
+	```
+	```bash
+	systemctl enable --now nmb.service
+	```
 
-#### 5.2 Samba group
-Create ``sambausers`` group and add yourself to it:
-```bash
-sudo groupadd -r sambausers
-```
-```bash
-sudo usermod -aG sambausers YOURUSERNAME
-```
-Create samba password for your shares:
-```bash
-sudo smbpasswd -a YOURUSERNAME
-```
+- ### 5.2 Samba group
+	Create ``sambausers`` group and add yourself to it:
+	```bash
+	sudo groupadd -r sambausers
+	```
+	```bash
+	sudo usermod -aG sambausers YOURUSERNAME
+	```
+	Create samba password for your shares:
+	```bash
+	sudo smbpasswd -a YOURUSERNAME
+	```
 
-#### 5.3 Example share
-I will use my ``Jellyfin`` library as example yet practical share.
+- ### 5.3 Example share
+	I will use my ``Jellyfin`` library as example yet practical share.
 
-Scroll to the bottom and add:
-```bash
-[Jellyfin]
-comment = Jellyfin's media
-path = /home/docker/jellyfin/media
-writable = yes
-browsable = yes
-create mask = 0700
-directory mask = 0700
-read only = no
-guest ok = no
-```
+	Scroll to the bottom and add:
+	```bash
+	[Jellyfin]
+	comment = Jellyfin's media
+	path = /home/docker/jellyfin/media
+	writable = yes
+	browsable = yes
+	create mask = 0700
+	directory mask = 0700
+	read only = no
+	guest ok = no
+	```
 
-> At this point make sure that directory you specified in share's path actually exists! If not run [Jellyfin](services/jellyfin) service or create it: ``sudo mkdir /home/docker/jellyfin/media``
+	> At this point make sure that directory you specified in share's path actually exists! If not run [Jellyfin](services/jellyfin) service or create it:
+	> ``sudo mkdir /home/docker/jellyfin/media``
 
-Change directory ownership and permissions:
-```bash
-sudo chown -R :sambausers /home/docker/jellyfin/media
-```
-```bash
-sudo chmod 1770 /home/docker/jellyfin/media
-```
+	Change directory ownership and permissions:
+	```bash
+	sudo chown -R :sambausers /home/docker/jellyfin/media
+	```
+	```bash
+	sudo chmod 1770 /home/docker/jellyfin/media
+	```
 
 
-### 5. Tunnels & Services
-TO DO
-Setup Portainer with Cloudflare Tunnels to allow access to your services outside your home network, then add as many services as you want.
+## 5. Tunnels & Services
+Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels) to allow access to your services outside your home network, then add as many services as you want.
 
 - ### 5a. Services
 	Here are details for setting some services. You can find all configs in [services](services) folder. Paste all of them in Portainer.
-	- **Cloudflare**: setup Cloudflare Tunnels
-	- **NextCloud**: setup NextCloud
-	- **Jellyfin**: setup Jellyfin
+	- **[NextCloud](services/nextcloud)**
+	- **[Jellyfin](services/jellyfin)**
