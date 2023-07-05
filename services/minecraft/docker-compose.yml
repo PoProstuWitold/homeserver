@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  mc:
+    image: itzg/minecraft-server
+    ports:
+      - "25565:25565"
+    tty: true
+    stdin_open: true
+    environment:
+      # OS OPTIONS
+      MEMORY: "4G"
+      MAX_MEMORY: "12G"
+      TZ: "Europe/Warsaw"
+      # SERVER OPTIONS
+      EULA: "TRUE"
+      SERVER_NAME: "Homster Server"
+      TYPE: "FABRIC"
+      VERSION: "1.19.2"
+      MOTD: "Minecraft server for Homsters and their owners"
+      DIFFICULTY: "normal"
+      # ICON: "paste url"
+      # OVERRIDE_ICON: "TRUE"
+      MAX_PLAYERS: 10
+      ENABLE_COMMAND_BLOCK: "TRUE"
+      VIEW_DISTANCE: 15
+    restart: unless-stopped
+    volumes:
+      - /home/docker/minecraft:/data
