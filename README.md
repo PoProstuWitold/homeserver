@@ -75,7 +75,7 @@ Setup VNC and SSH to remote access your soon-to-be headless server.
   	then you can connect from any device within your LAN to your server by command:
   
   	```bash
-   	ssh <username>@<hostname/ip-address>
+   ssh <username>@<hostname/ip-address>
    	```
 
 	for example:
@@ -83,7 +83,7 @@ Setup VNC and SSH to remote access your soon-to-be headless server.
    	ssh myAwesomeLinuxUsername@192.168.0.18
    	```
     
-  	type password for your user nad congrats! You are connected via SSh!
+  	type password for your user nad congrats! You are connected via SSH!
 
 ## 3. Docker & Docker Compose
 Setup Docker with Docker Compose and add your user to "docker" group.
@@ -208,5 +208,9 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 
 - ### 5a. Services
 	Here are details for setting some services. You can find all configs in [services](services) folder. Paste all of them in Portainer.
-	- **[NextCloud](services/nextcloud)**
-	- **[Jellyfin](services/jellyfin)**
+	- **[Jellyfin](services/jellyfin)** - The Free Software Media System
+	- **[NextCloud](services/nextcloud)** - A Safe Home For All Your Data
+	- **[Dashy](services/dashy)** - A Self-Hostable Personal Dashboard
+	- **[Mealie](services/mealie)** - Recipe Management For The Modern Household
+	- **[Briefkasten](services/briefkasten)** - Self-Hosted Bookmarking App
+	- **[Uptime Kuma](services/uptime_kuma)** - A Fancy Self-Hosted Monitoring Tool
