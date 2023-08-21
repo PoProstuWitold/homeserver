@@ -8,14 +8,15 @@ After following this tutorial you will have:
 - Remote access to your server by [VNC](https://en.wikipedia.org/wiki/Virtual_Network_Computing) and [SSH](https://en.wikipedia.org/wiki/Secure_Shell) from any device you want.
 - Shared folders using [Samba](https://en.wikipedia.org/wiki/Samba_(software)).
 - Preconfigured, isolated & selfhosted cloud, media server, dashboard and "service managment center" using Docker and Portainer and as many more as you want.
+- Minecraft server with *mc.**your-domain.com***
 
 ## 0. Things to consider & Requirements
 Remember that your server is likely going to run 24/7, so keep in mind the energy consumption of your workstation and its noise. You can use your old PC, [Raspberry Pi 4](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/), or some mini PC (I recommend some older, used HP, Dell, Lenovo, or Intel NUC models). In this guide, I will be using an **[Intel NUC11TNHI5](https://www.intel.com/content/www/us/en/products/sku/205594/intel-nuc-11-pro-kit-nuc11tnhi5/specifications.html)** with 32GB RAM and a 2TB SSD, as it only consumes 28W of energy. It's not necessary to buy exactly the same hardware as mine to follow this tutorial.
 
 In terms of hardware, here are my recommendations:
 - **CPU**: at least 9th generation Intel Core i3 or i5 or AMD equivalent; 4+ cores.
-- **GPU**: don't run a server with a GPU, as you won't need it and it will significantly increase energy consumption.
-- **RAM**: I recommend a minimum of 8GB. If you're going to run lots of services, then 16GB or even 32GB may be necessary, especially if you want to run game servers. In 90% of cases, 64GB is overkill, but if you can afford it, it's available.
+- **GPU**: don't run the server with a gpu (unless you want your own ***[gaming cloud](https://en.wikipedia.org/wiki/Cloud_gaming)***) as you won't need it and it will greatly increase power consumption.
+- **RAM**: I recommend a minimum of 8GB. If you're going to run lots of services, then 16GB or even 32GB may be necessary, especially if you want to run game servers. In 90% of cases, 64GB is overkill, but if you can afford it and want it, then go ahead.
 - **STORAGE**: I recommend either going full SSD (at least 512GB) or using an SSD for the OS (128GB or 256GB) and an HDD (min. 512GB) for data. SSDs are more energy-efficient but also more expensive.
 
 ### All Requirements
@@ -26,7 +27,7 @@ To fully follow this tutorial you need:
 
 
 ## 1. Update BIOS and Install Your Preferred Linux Distribution
-This step will be different depending on your hardware. Just google "bios download" and your hardware.
+This step will be different depending on your hardware. Just google "bios download" and your motherboard name or name of your machine (PC, laptop).
 
 For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but you can use any Arch-based distro (e.g., Manjaro, Garuda, or plain Arch) to essentially copy-paste commands. I chose EndeavourOS, because it comes with some useful stuff (that I will eventually need) installed and already configured and it has ISOs with many DE (KDE Plasma, Gnome, Xfce4 and more). If you opt for a non-Arch-based distro, you will need to find equivalent instructions for your chosen distribution.
 
@@ -62,6 +63,27 @@ Setup VNC and SSH to remote access your soon-to-be headless server.
 	Reboot and boom! You have encrypted VNC connection!
 - ### 2b. SSH
   	Install ``SSH`` and connect to it.
+
+  	```bash
+	sudo systemctl enable sshd
+  	```
+
+  	```bash
+	sudo systemctl enable sshd
+  	```
+
+  	then you can connect from any device within your LAN to your server by command:
+  
+  	```bash
+   	ssh <username>@<hostname/ip-address>
+   	```
+
+	for example:
+   	```bash
+   	ssh myAwesomeLinuxUsername@192.168.0.18
+   	```
+    
+  	type password for your user nad congrats! You are connected via SSh!
 
 ## 3. Docker & Docker Compose
 Setup Docker with Docker Compose and add your user to "docker" group.
