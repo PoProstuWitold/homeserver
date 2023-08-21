@@ -6,6 +6,9 @@ In every case you need to run:
 - [Portainer](portainer) - easy managment for dockerized services
 
 List of custom services. You can run and stop any amount or none of them in any order:
-- [Jellyfin](jellyfin) - media server
-- [NextCloud](nextcloud) - cloud
-- [Dashy](dashy) - customizable dashboard for your home server
+- [Jellyfin](jellyfin) - The Free Software Media System
+- [NextCloud](nextcloud) - A Safe Home For All Your Data
+- [Dashy](dashy) - A Self-Hostable Personal Dashboard
+- [Mealie](mealie) - Recipe Management For The Modern Household
+- [Briefkasten](briefkasten) - Self-Hosted Bookmarking App
+- [Uptime Kuma](uptime_kuma) - A Fancy Self-Hosted Monitoring Tool
