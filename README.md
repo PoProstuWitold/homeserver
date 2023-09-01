@@ -214,3 +214,5 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 	- **[Mealie](services/mealie)** - Recipe Management For The Modern Household
 	- **[Briefkasten](services/briefkasten)** - Self-Hosted Bookmarking App
 	- **[Uptime Kuma](services/uptime_kuma)** - A Fancy Self-Hosted Monitoring Tool
+	- **[Minecraft](minecraft)** - Minecraft server with your own IP
+	- **[Custom service](custom)**
