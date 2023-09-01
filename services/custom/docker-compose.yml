@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  sayuna-prod:
+    build:
+      context: .
+      target: production
+    container_name: Sayuna
+    stdin_open: true
+    tty: true
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      .env
+    restart: unless-stopped
