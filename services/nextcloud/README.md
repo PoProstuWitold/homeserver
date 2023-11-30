@@ -42,3 +42,19 @@ services:
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
 ```
+
+### How to set up `Cron` as background jobs?
+By default **NextCloud** is using `AJAX` requests to run background jobs. However recommended way of doing it is to use `Cron`. It may be tricky to setup but it's trivial when you see it once.
+
+1. Install `cronie` on distro of your choice
+2. Run following command:
+```bash
+sudo crontab -u <YOUR_USERNAME> -e
+```
+3. Paste there following line and save:
+```bash
+*/5 * * * * docker exec -u www-data nextcloud-app-1 php cron.php
+```
+where `nextcloud-app-1` is your Docker container name.
+
+After you did all of above you can change this setting in NextCloud web UI.
