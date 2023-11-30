@@ -13,4 +13,5 @@ List of services. You can run and stop any amount or none of them in any order:
 - [Briefkasten](briefkasten) - Self-Hosted Bookmarking App
 - [Uptime Kuma](uptime_kuma) - A Fancy Self-Hosted Monitoring Tool
 - [Minecraft](minecraft) - Minecraft server with your own IP
+- [Watchtower](watchtower) - update your Docker containers automatically
 - [Custom service](custom)

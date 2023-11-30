@@ -215,4 +215,5 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 	- **[Briefkasten](services/briefkasten)** - Self-Hosted Bookmarking App
 	- **[Uptime Kuma](services/uptime_kuma)** - A Fancy Self-Hosted Monitoring Tool
 	- **[Minecraft](services/minecraft)** - Minecraft server with your own IP
+	- **[Watchtower](watchtower)** - update your Docker containers automatically
 	- **[Custom service](services/custom)**
