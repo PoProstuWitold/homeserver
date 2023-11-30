@@ -19,8 +19,10 @@ services:
       - WATCHTOWER_REVIVE_STOPPED=false
       - WATCHTOWER_NO_RESTART=false
       - WATCHTOWER_TIMEOUT=30s
-      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_SCHEDULE=0 0 19 * * *
       - WATCHTOWER_DEBUG=false
-      - TZ=Poland/Warsaw
+      - TZ=Europe/Warsaw
     network_mode: bridge
 ```
+
+With this setup cron job to update all containers will run everyday at 19:00 of specified timezone.
