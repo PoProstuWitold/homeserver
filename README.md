@@ -212,7 +212,7 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 	- **[NextCloud](services/nextcloud)** - A Safe Home For All Your Data
 	- **[Dashy](services/dashy)** - A Self-Hostable Personal Dashboard
 	- **[Mealie](services/mealie)** - Recipe Management For The Modern Household
-	- **[Briefkasten](services/briefkasten)** - Self-Hosted Bookmarking App
+	- **[Linkding](services/linkding)** - Self-hosted bookmark manager
 	- **[Uptime Kuma](services/uptime_kuma)** - A Fancy Self-Hosted Monitoring Tool
 	- **[Minecraft](services/minecraft)** - Minecraft server with your own IP
 	- **[Watchtower](services/watchtower)** - update your Docker containers automatically

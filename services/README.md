@@ -10,7 +10,7 @@ List of services. You can run and stop any amount or none of them in any order:
 - [NextCloud](nextcloud) - A Safe Home For All Your Data
 - [Dashy](dashy) - A Self-Hostable Personal Dashboard
 - [Mealie](mealie) - Recipe Management For The Modern Household
-- [Briefkasten](briefkasten) - Self-Hosted Bookmarking App
+- [Linkding](linkding) - Self-hosted bookmark manager
 - [Uptime Kuma](uptime_kuma) - A Fancy Self-Hosted Monitoring Tool
 - [Minecraft](minecraft) - Minecraft server with your own IP
 - [Watchtower](watchtower) - update your Docker containers automatically
