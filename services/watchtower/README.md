@@ -1,6 +1,12 @@
 # Watchtower
 A process for automating Docker container base image updates.
 
+**Important note:** with configuration provided below ``Watchtower`` updates all images of all running containers. It is not recommended to use it with tag *latest* or/and for critical services as in case of breaking changes some of your services may **break** . Use with caution.
+
+You can disable watchtower for particular services by adding label to their respective containers:
+
+``com.centurylinklabs.watchtower.enable = false``
+
 ``docker-compose.yml``
 ```yaml
 version: "3.8"
