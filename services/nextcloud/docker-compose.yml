@@ -8,7 +8,7 @@ services:
   db:
     image: mariadb:latest
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --character-set-server=utf8
     volumes:
       - /home/docker/nextcloud/db:/var/lib/mysql
     environment:
