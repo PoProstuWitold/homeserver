@@ -9,6 +9,7 @@ List of services. You can run and stop any amount or none of them in any order:
 - [Jellyfin](jellyfin) - The Free Software Media System
 - [jellyseerr](jellyseerr) - Application For Managing Requests For Your Media Library
 - [NextCloud](nextcloud) - A Safe Home For All Your Data
+- [Homarr](homarr) - customizable browser's home page for your homeserver
 - [Dashy](dashy) - A Self-Hostable Personal Dashboard
 - [Mealie](mealie) - Recipe Management For The Modern Household
 - [Linkding](linkding) - Self-hosted bookmark manager

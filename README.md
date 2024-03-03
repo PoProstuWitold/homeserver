@@ -211,6 +211,7 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 	- **[Jellyfin](services/jellyfin)** - The Free Software Media System
 	- **[Jellyseerr](services/jellyseerr)** - Application For Managing Requests For Your Media Library
 	- **[NextCloud](services/nextcloud)** - A Safe Home For All Your Data
+	- **[Homarr](services/homarr)** - customizable browser's home page for your homeserver
 	- **[Dashy](services/dashy)** - A Self-Hostable Personal Dashboard
 	- **[Mealie](services/mealie)** - Recipe Management For The Modern Household
 	- **[Linkding](services/linkding)** - Self-hosted bookmark manager
