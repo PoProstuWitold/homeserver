@@ -218,5 +218,6 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 	- **[Minecraft](services/minecraft)** - Minecraft server with your own IP
 	- **[dash.](services/dash)** - a modern server dashboard
 	- **[Watchtower](services/watchtower)** - update your Docker containers automatically
+	- **[qBittorrent](services/qbittorrent)** - qBittorrent BitTorrent client
 	- **[Starr Apps](services/starr_apps)** - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks
 	- **[Custom service](services/custom)**

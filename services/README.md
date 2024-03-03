@@ -16,5 +16,6 @@ List of services. You can run and stop any amount or none of them in any order:
 - [Minecraft](minecraft) - Minecraft server with your own IP
 - [dash.](dash) - a modern server dashboard
 - [Watchtower](watchtower) - update your Docker containers automatically
+- [qBittorrent](qbittorrent) - qBittorrent BitTorrent client
 - [Starr Apps](starr_apps) - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks
 - [Custom service](custom)
