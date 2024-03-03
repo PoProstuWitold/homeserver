@@ -13,6 +13,7 @@ volumes:
 
 services:
   db:
+    container_name: nextcloud_db
     image: mariadb:latest
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --character-set-server=utf8
@@ -25,6 +26,7 @@ services:
       - MYSQL_USER=nextcloud
 
   app:
+    container_name: nextcloud
     image: nextcloud:latest
     restart: always
     ports:
@@ -35,12 +37,22 @@ services:
       - db
     volumes:
       - /home/docker/nextcloud/nextcloud:/var/www/html
-      - /home/docker/nextcloud/etc/localtime:/etc/localtime:ro
+      - /etc/localtime:/etc/localtime:ro
     environment:
       - MYSQL_PASSWORD=changeme
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
+      - REDIS_HOST=nextcloud_cache
+      - REDIS_PORT=6380
+      - REDIS_HOST_PASSWORD=nextcloud_cache_password
+    redis:
+      container_name: nextcloud_cache
+      image: redis
+      restart: unless-stopped
+      ports:
+        - 6380:6379
+      command: redis-server --requirepass nextcloud_cache_password
 ```
 
 ### How to set up `Cron` as background jobs?
@@ -53,8 +65,8 @@ sudo crontab -u <YOUR_USERNAME> -e
 ```
 3. Paste there following line and save:
 ```bash
-*/5 * * * * docker exec -u www-data nextcloud-app-1 php cron.php
+*/5 * * * * docker exec -u www-data nextcloud php cron.php
 ```
-where `nextcloud-app-1` is your Docker container name.
+where `nextcloud` is your Docker container name.
 
-After you did all of above you can change this setting in NextCloud web UI.
+After you did all of above you can change this setting in NextCloud Web UI.
