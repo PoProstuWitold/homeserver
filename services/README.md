@@ -14,6 +14,7 @@ List of services. You can run and stop any amount or none of them in any order:
 - [Linkding](linkding) - Self-hosted bookmark manager
 - [Uptime Kuma](uptime_kuma) - A Fancy Self-Hosted Monitoring Tool
 - [Minecraft](minecraft) - Minecraft server with your own IP
+- [dash.](dash) - a modern server dashboard
 - [Watchtower](watchtower) - update your Docker containers automatically
 - [Starr Apps](starr_apps) - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks
 - [Custom service](custom)

@@ -216,6 +216,7 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 	- **[Linkding](services/linkding)** - Self-hosted bookmark manager
 	- **[Uptime Kuma](services/uptime_kuma)** - A Fancy Self-Hosted Monitoring Tool
 	- **[Minecraft](services/minecraft)** - Minecraft server with your own IP
+	- **[dash.](services/dash)** - a modern server dashboard
 	- **[Watchtower](services/watchtower)** - update your Docker containers automatically
 	- **[Starr Apps](services/starr_apps)** - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks
 	- **[Custom service](services/custom)**
