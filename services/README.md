@@ -18,4 +18,5 @@ List of services. You can run and stop any amount or none of them in any order:
 - [Watchtower](watchtower) - update your Docker containers automatically
 - [qBittorrent](qbittorrent) - qBittorrent BitTorrent client
 - [Starr Apps](starr_apps) - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks
+- [Home Assistant](homeassistant) - open source home automation that puts local control and privacy first
 - [Custom service](custom)
