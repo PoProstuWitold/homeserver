@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Europe/Warsaw
+    ports:
+      - 5055:5055
+    volumes:
+      - /home/docker/jellyseer/config:/app/config
+    restart: unless-stopped

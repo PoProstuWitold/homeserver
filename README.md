@@ -209,6 +209,7 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 - ### 5a. Services
 	Here are details for setting some services. You can find all configs in [services](services) folder. Paste all of them in Portainer.
 	- **[Jellyfin](services/jellyfin)** - The Free Software Media System
+	- **[Jellyseerr](services/jellyseerr)** - Application For Managing Requests For Your Media Library
 	- **[NextCloud](services/nextcloud)** - A Safe Home For All Your Data
 	- **[Dashy](services/dashy)** - A Self-Hostable Personal Dashboard
 	- **[Mealie](services/mealie)** - Recipe Management For The Modern Household
@@ -216,4 +217,5 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 	- **[Uptime Kuma](services/uptime_kuma)** - A Fancy Self-Hosted Monitoring Tool
 	- **[Minecraft](services/minecraft)** - Minecraft server with your own IP
 	- **[Watchtower](services/watchtower)** - update your Docker containers automatically
+	- **[Starr Apps](services/starr_apps)** - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks
 	- **[Custom service](services/custom)**
