@@ -5,7 +5,8 @@ I also recommend to install these services first:
 - Prowlarr
 - Radarr
 - Sonarr
-all of them are docummented in ***star_apps*** directory.
+
+all of them are docummented in ***services/star_apps*** directory.
 
 Remember to change your [timezone](https://kevinnovak.github.io/Time-Zone-Picker/). Default is ``Europe/Warsaw``.
 
