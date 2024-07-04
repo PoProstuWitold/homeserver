@@ -10,6 +10,10 @@ After following this tutorial you will have:
 - Couple of web or standalone dockerized services
 - Minecraft server with *mc.**your-domain.tld***
 
+In the end your server may look like this (diagram made by me in [draw.io](https://draw.io/)):
+
+![alt text](assets/diagram_tunnels.png)
+
 ## 1. Install Your Preferred Linux Distribution
 
 For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but you can use any Arch-based distro (e.g. Manjaro, Garuda, or plain Arch) to essentially copy-paste commands. I chose EndeavourOS, because it comes with some useful stuff (that I will eventually need) installed and already configured and it has ISOs with many DE (KDE Plasma, Gnome, Xfce4 and more). If you opt for a non-Arch-based distro, you will need to find equivalent instructions for your chosen distribution.
