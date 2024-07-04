@@ -12,7 +12,7 @@ After following this tutorial you will have:
 
 In the end your server may look like this (diagram made by me in [draw.io](https://draw.io/)):
 
-![alt text](assets/diagram_tunnels.png)
+![Diagram for homeserver with tunnels](assets/diagram_tunnels.png)
 
 ## 1. Install Your Preferred Linux Distribution
 
