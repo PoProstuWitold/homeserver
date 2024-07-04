@@ -22,7 +22,7 @@ Although it is not required I recommend updating your BIOS. Just google "bios do
 
 
 ### Requirements
-In case of both going with *Cloudflare Tunnels* or *Port Forwarding* you will need:
+In case of both going with ***Cloudflare Tunnels*** or ***Port Forwarding*** you will need:
 - Your own domain (you have to either buy it through Cloudflare or move your existing domain to their DNS servers).
 - A Cloudflare account.
 - A workstation where the server will be running.
