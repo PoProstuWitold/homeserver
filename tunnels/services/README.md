@@ -1,5 +1,7 @@
-# Services
+# Services - Tunnels
 There are all services I made config for. All you need to do is follow instructions for particular service (such as change password) and run them either in ***Portainer*** (recommended) or just ``docker compose up -d`` 
+
+> These configs were created for server using ***Tunnels***. It may be outdated compared to version using ***Port Forwarding***. If you want to simply grab *docker-compose* file(s) I highly recommend heading to *Port Forwarding* section.
 
 In every case you need to run:
 - [Cloudflare Tunnels](tunnels) - making services accesible outside your home network
@@ -10,12 +12,11 @@ List of services. You can run and stop any amount or none of them in any order:
 - [jellyseerr](jellyseerr) - Application For Managing Requests For Your Media Library
 - [NextCloud](nextcloud) - A Safe Home For All Your Data
 - [Homarr](homarr) - customizable browser's home page for your homeserver
-- [Dashy](dashy) - A Self-Hostable Personal Dashboard
 - [Mealie](mealie) - Recipe Management For The Modern Household
 - [Linkding](linkding) - Self-hosted bookmark manager
 - [Uptime Kuma](uptime_kuma) - A Fancy Self-Hosted Monitoring Tool
 - [Minecraft](minecraft) - Minecraft server with your own IP
-- [dash.](dash) - a modern server dashboard
+- [dashdot](dash) - a modern server dashboard
 - [Watchtower](watchtower) - update your Docker containers automatically
 - [qBittorrent](qbittorrent) - qBittorrent BitTorrent client
 - [Starr Apps](starr_apps) - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks
