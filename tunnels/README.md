@@ -4,10 +4,10 @@ In this section I will help you setup your personal server using ***Cloudflare T
 
 ## Goals & Features
 After following this tutorial you will have:
-- Secure access to your locally hosted services using [tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/).
-- Remote access to your server by [VNC](https://en.wikipedia.org/wiki/Virtual_Network_Computing) and [SSH](https://en.wikipedia.org/wiki/Secure_Shell) from any device you want.
-- Shared folders using [Samba](https://en.wikipedia.org/wiki/Samba_(software)).
-- Preconfigured, isolated & selfhosted cloud, media server, dashboard and "service managment center" using Docker and Portainer and as many more as you want.
+- Secure access to your locally hosted services using [tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
+- Remote access to your server from anywhere by [VNC](https://en.wikipedia.org/wiki/Virtual_Network_Computing) and from LAN by [SSH](https://en.wikipedia.org/wiki/Secure_Shell) from any device you want
+- Shared folders using [Samba](https://en.wikipedia.org/wiki/Samba_(software))
+- Couple of web or standalone dockerized services
 - Minecraft server with *mc.**your-domain.tld***
 
 ## 1. Install Your Preferred Linux Distribution
@@ -28,7 +28,7 @@ For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but yo
 ## 2. Remote connection
 Setup VNC and SSH to remote access your soon-to-be headless server.
 - ### 2a. VNC
-  
+> **IMPORTANT!** You need to either download some dummy X11 driver or buy dummy HDMI adapter for about 4 euro
 	- 1. Install [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/) on your client (in my case Windows 11 Home).
 	- 2. Install RealVNC Server on your server:
 
@@ -43,7 +43,7 @@ Setup VNC and SSH to remote access your soon-to-be headless server.
 	```
  
 	After you do this, login to your RealVNC account on RealVNC Server. Make sure you check ``SHA-256`` encryption.
-	Reboot and boom! You have encrypted VNC connection!
+	Reboot and boom! You have encrypted VNC connection! With VNC you can connect to your server **from anywhere**.
 - ### 2b. SSH
   	Install ``SSH`` and connect to it.
 
@@ -66,7 +66,7 @@ Setup VNC and SSH to remote access your soon-to-be headless server.
    	ssh myAwesomeLinuxUsername@192.168.0.18
    	```
     
-  	type password for your user nad congrats! You are connected via SSH!
+  	type password for your user nad congrats! You are connected via SSH! With SSH you can connect to your server **from LAN only**.
 
 ## 3. Docker & Docker Compose
 Setup Docker with Docker Compose and add your user to "docker" group.
