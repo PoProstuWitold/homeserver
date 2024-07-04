@@ -3,8 +3,6 @@
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
@@ -14,8 +12,8 @@ services:
       - PGID=1000
       - TZ=Europe/Warsaw
     volumes:
-      - /home/docker/lidarr/config:/config
-      - /home/docker/jellyfin/media:/data
+      - /srv/server/services/lidarr/config:/config
+      - /srv/server/media:/data
     ports:
       - 8686:8686
     restart: unless-stopped

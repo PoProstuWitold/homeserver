@@ -1,29 +1,34 @@
-version: "3.8"
-
 services:
   mc:
-    image: itzg/minecraft-server
+    container_name: mc
+    image: itzg/minecraft-server:latest
     ports:
-      - "25565:25565"
+      - 25565:25565
     tty: true
     stdin_open: true
     environment:
-      # OS OPTIONS
-      MEMORY: "4G"
+      # GENERAL
+      MEMORY: "6G"
       MAX_MEMORY: "12G"
       TZ: "Europe/Warsaw"
-      # SERVER OPTIONS
-      EULA: "TRUE"
-      SERVER_NAME: "Homster Server"
+      LOG_TIMESTAMP: true
+      # SERVER
       TYPE: "FABRIC"
-      VERSION: "1.19.2"
-      MOTD: "Minecraft server for Homsters and their owners"
+      EULA: true
+      VERSION: "1.21"
+      MOTD: "Motto of the day"
       DIFFICULTY: "normal"
-      # ICON: "paste url"
-      # OVERRIDE_ICON: "TRUE"
-      MAX_PLAYERS: 10
-      ENABLE_COMMAND_BLOCK: "TRUE"
-      VIEW_DISTANCE: 15
+      # ICON: "url"
+      # OVERRIDE_ICON: true
+      MAX_PLAYERS: 32
+      ENABLE_COMMAND_BLOCK: true
+      VIEW_DISTANCE: 16
+      SERVER_NAME: "server name"
+      EXEC_DIRECTLY: true
+      ENABLE_QUERY: true
+      # WHITELIST
+      ENABLE_WHITELIST: true
+      WHITELIST: "Steve,Alex"
     restart: unless-stopped
     volumes:
-      - /home/docker/minecraft:/data
+      - /srv/server/services/minecraft/servers/FABRIC_1_21:/data

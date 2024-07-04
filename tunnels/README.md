@@ -161,13 +161,13 @@ so it will match Windows's default one.
 	```
 
 - ### 5.3 Example share
-	I will use my ``Jellyfin`` library as example yet practical share.
+	I will use my ``Jellyfin`` media library as example yet practical share.
 
 	Scroll to the bottom and add:
 	```bash
-	[Jellyfin]
-	comment = Jellyfin media
-	path = /home/docker/jellyfin/media
+	[Media]
+	comment = Media
+	path = /srv/server/media
 	writable = yes
 	browsable = yes
 	create mask = 0700
@@ -177,14 +177,14 @@ so it will match Windows's default one.
 	```
 
 	> At this point make sure that directory you specified in share's path actually exists! If not run [Jellyfin](services/jellyfin) service or create it:
-	> ``sudo mkdir /home/docker/jellyfin/media``
+	> ``sudo mkdir /srv/server/media``
 
 	Change directory ownership and permissions:
 	```bash
-	sudo chown -R :sambausers /home/docker/jellyfin/media
+	sudo chown -R :sambausers /srv/server/media
 	```
 	```bash
-	sudo chmod 1770 /home/docker/jellyfin/media
+	sudo chmod 1770 /srv/server/media
 	```
 
 
@@ -201,7 +201,7 @@ Setup [Portainer](services/portainer) with [Cloudflare Tunnels](services/tunnels
 	- **[Linkding](services/linkding)** - Self-hosted bookmark manager
 	- **[Uptime Kuma](services/uptime_kuma)** - A Fancy Self-Hosted Monitoring Tool
 	- **[Minecraft](services/minecraft)** - Minecraft server with your own IP
-	- **[dashdot](services/dash)** - a modern server dashboard
+	- **[dashdot](services/dashdot)** - a modern server dashboard
 	- **[Watchtower](services/watchtower)** - update your Docker containers automatically
 	- **[qBittorrent](services/qbittorrent)** - qBittorrent BitTorrent client
 	- **[Starr Apps](services/starr_apps)** - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks

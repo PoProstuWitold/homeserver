@@ -46,9 +46,6 @@ ENV BOT_TOKEN=$BOT_TOKEN \
     BOT_PREFIX=$BOT_PREFIX \
     AI_ENABLED=$AI_ENABLED \
     CHAT_GPT_API_KEY=$CHAT_GPT_API_KEY \
-    PORT=${PORT:-3000}
-
-EXPOSE ${PORT}
 
 RUN pnpm run build
 CMD ["pm2-runtime", "build/main.js"]
@@ -56,27 +53,25 @@ CMD ["pm2-runtime", "build/main.js"]
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
-  sayuna-prod:
+  sayuna:
+    container_name: Sayuna
     build:
       context: .
       target: production
-    container_name: Sayuna
     stdin_open: true
     tty: true
-    ports:
-      - "${PORT}:${PORT}"
     env_file:
       .env
     restart: unless-stopped
 ```
 
-As you can see I use ``pm2`` inside my docker container. I'm also exposing port specified in ``.env`` file or ``3000`` if nothing is specified. Now in order to run this, place ``.env`` file and all ``Sayuna`` files in same directory and just run:
+As you can see I use ``pm2`` inside my docker container. You can also expose ports if your app needs it. 
+
+Now in order to run this, place ``.env`` file and all ``Sayuna`` files in same directory and just run:
 
 ```bash
 docker compose up -d
 ```
 
-This will run your app in the background. You will be able to control it through ``portainer``.
+This will run your app in the background. You will be able to control it through ``Portainer``.

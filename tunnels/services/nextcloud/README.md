@@ -5,30 +5,22 @@ Remember to change: ``MYSQL_ROOT_PASSWORD``, ``MYSQL_PASSWORD`` in ``db`` contai
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
-volumes:
-  nextcloud:
-  db:
-
 services:
   db:
     container_name: nextcloud_db
     image: mariadb:latest
-    restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW --character-set-server=utf8
     volumes:
-      - /home/docker/nextcloud/db:/var/lib/mysql
+      - /srv/server/services/nextcloud/db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=changeme
       - MYSQL_PASSWORD=changeme
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
-
+    restart: unless-stopped
   app:
     container_name: nextcloud
     image: nextcloud:latest
-    restart: always
     ports:
       - 8080:80
     links:
@@ -36,7 +28,7 @@ services:
     depends_on:
       - db
     volumes:
-      - /home/docker/nextcloud/nextcloud:/var/www/html
+      - /srv/server/services/nextcloud/nc:/var/www/html
       - /etc/localtime:/etc/localtime:ro
     environment:
       - MYSQL_PASSWORD=changeme
@@ -46,13 +38,14 @@ services:
       - REDIS_HOST=nextcloud_cache
       - REDIS_PORT=6380
       - REDIS_HOST_PASSWORD=nextcloud_cache_password
-    redis:
-      container_name: nextcloud_cache
-      image: redis
-      restart: unless-stopped
-      ports:
-        - 6380:6379
-      command: redis-server --requirepass nextcloud_cache_password
+    restart: unless-stopped
+  redis:
+    container_name: nextcloud_cache
+    image: redis
+    ports:
+      - 6380:6379
+    command: redis-server --requirepass nextcloud_cache_password
+    restart: unless-stopped
 ```
 
 ### How to set up `Cron` as background jobs?

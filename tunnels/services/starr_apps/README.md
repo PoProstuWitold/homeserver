@@ -11,4 +11,3 @@ Installing *Prowlarr* isn't essential but will make further setup and configurat
 - ***[Readarr](readarr)*** - for ebooks
 
 *Radarr* and *Sonarr* have great integration with *Jellyfin* and *Jellyseerr*. I recommend setting them first.
- 

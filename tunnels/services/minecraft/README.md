@@ -5,39 +5,43 @@ I will use this [dockerized Minecraft](https://github.com/itzg/docker-minecraft-
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   mc:
-    image: itzg/minecraft-server
+    container_name: mc
+    image: itzg/minecraft-server:latest
     ports:
-      - "25565:25565"
+      - 25565:25565
     tty: true
     stdin_open: true
     environment:
-      # OS OPTIONS
-      MEMORY: "4G"
+      # GENERAL
+      MEMORY: "6G"
       MAX_MEMORY: "12G"
       TZ: "Europe/Warsaw"
-      # SERVER OPTIONS
-      EULA: "TRUE"
-      SERVER_NAME: "Homster Server"
+      LOG_TIMESTAMP: true
+      # SERVER
       TYPE: "FABRIC"
-      VERSION: "1.19.2"
-      MOTD: "Minecraft server for Homsters and their owners"
+      EULA: true
+      VERSION: "1.21"
+      MOTD: "Motto of the day"
       DIFFICULTY: "normal"
-      # ICON: "paste url"
-      # OVERRIDE_ICON: "TRUE"
-      MAX_PLAYERS: 10
-      ENABLE_COMMAND_BLOCK: "TRUE"
-      VIEW_DISTANCE: 15
-	  # you can also add WHITELIST and so on
+      # ICON: "url"
+      # OVERRIDE_ICON: true
+      MAX_PLAYERS: 32
+      ENABLE_COMMAND_BLOCK: true
+      VIEW_DISTANCE: 16
+      SERVER_NAME: "server name"
+      EXEC_DIRECTLY: true
+      ENABLE_QUERY: true
+      # WHITELIST
+      ENABLE_WHITELIST: true
+      WHITELIST: "Steve,Alex"
     restart: unless-stopped
     volumes:
-      - /home/docker/minecraft:/data
+      - /srv/server/services/minecraft/servers/FABRIC_1_21:/data
 ```
 
-When your setup is working and you can connect to your server via ``your-ipv4:25565`` and want to make your server accesible via ``mc.your-domain.com`` then follow this guide.
+When your setup is working and you can connect to your server via ``your-ipv4:25565`` and want to make your server accesible via ``mc.your-domain.tld`` then follow this guide.
 ### 1. Setup ``playit.gg`` and copy your server IP
 
 Go to [playit.gg](https://playit.gg/), download their software, make TCP Minecraft Java tunnel.
@@ -49,6 +53,4 @@ Paste previously copied IP to [mcsrvstat](https://mcsrvstat.us/). Scroll down an
 
 It should be fairly simple, but if you need additional help this [post](https://discuss.playit.gg/t/custom-free-domain-for-your-server-freenom/461) may help you.
 
-In the end you should be able to join to your server via ``mc.your-domain.com``.
-
-
+In the end you should be able to join to your server via ``mc.your-domain.tld``.

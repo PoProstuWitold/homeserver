@@ -5,18 +5,16 @@ You can get all `env` options [here](https://github.com/sissbruecker/linkding/bl
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   linkding:
-    container_name: "${LD_CONTAINER_NAME:-linkding}"
     image: sissbruecker/linkding:latest
+    container_name: "${LD_CONTAINER_NAME:-linkding}"
     ports:
       - "${LD_HOST_PORT:-9090}:9090"
-    volumes:
-      - "${LD_HOST_DATA_DIR:-/home/docker/linkding}:/etc/linkding/data"
     env_file:
       - stack.env
+    volumes:
+      - "${LD_HOST_DATA_DIR:-/home/docker/linkding}:/etc/linkding/data"
     restart: unless-stopped
 ```
 

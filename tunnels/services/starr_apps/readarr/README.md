@@ -18,8 +18,8 @@ services:
       - PGID=1000
       - TZ=Europe/Warsaw
     volumes:
-      - /home/docker/readarr/config:/config
-      - /home/docker/jellyfin/media:/data
+      - /srv/server/services/readarr/config:/config
+      - /srv/server/media:/data
     ports:
       - 8787:8787
     restart: unless-stopped

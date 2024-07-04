@@ -1,23 +1,18 @@
-version: "3.8"
-
 services:
   mealie:
-    container_name: mealie
     image: hkotel/mealie:latest
-    restart: always
+    container_name: mealie
     ports:
-      - 9925:80
+      - 9091:9000
+    deploy:
+      resources:
+        limits:
+          memory: 1000M 
     environment:
       PUID: 1000
       PGID: 1000
       TZ: Europe/Warsaw
-
-      # Default Recipe Settings
-      RECIPE_PUBLIC: 'true'
-      RECIPE_SHOW_NUTRITION: 'true'
-      RECIPE_SHOW_ASSETS: 'true'
-      RECIPE_LANDSCAPE_VIEW: 'true'
-      RECIPE_DISABLE_COMMENTS: 'false'
-      RECIPE_DISABLE_AMOUNT: 'false'
+      BASE_URL: https://mealie.your-domain.tld
     volumes:
-      - /home/docker/mealie:/app/data
+      - /srv/server/services/mealie:/app/data
+    restart: unless-stopped

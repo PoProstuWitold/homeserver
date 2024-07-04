@@ -3,8 +3,6 @@
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -14,8 +12,8 @@ services:
       - PGID=1000
       - TZ=Europe/Warsaw
     volumes:
-      - /home/docker/radarr/config:/config
-      - /home/docker/jellyfin/media:/data
+      - /srv/server/services/radarr/config:/config
+      - /srv/server/media/media:/data
     ports:
       - 7878:7878
     restart: unless-stopped

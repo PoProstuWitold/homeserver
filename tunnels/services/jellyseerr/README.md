@@ -12,18 +12,16 @@ Remember to change your [timezone](https://kevinnovak.github.io/Time-Zone-Picker
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
+    ports:
+      - 5055:5055
     environment:
       - LOG_LEVEL=debug
       - TZ=Europe/Warsaw
-    ports:
-      - 5055:5055
     volumes:
-      - /home/docker/jellyseer/config:/app/config
+      - /srv/server/services/jellyseer/config:/app/config
     restart: unless-stopped
 ```

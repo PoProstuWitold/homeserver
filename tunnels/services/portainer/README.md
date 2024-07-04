@@ -3,17 +3,14 @@ Powerful container management
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   portainer:
     image: portainer/portainer-ce:latest
+    container_name: portainer
     ports:
       - 9443:9443
     volumes:
-      - /home/docker/portainer/data:/data
-      - /home/docker/portainer/var/run/docker.sock:/var/run/docker.sock
+      - /srv/server/services/portainer/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
-volumes:
-  data:
 ```

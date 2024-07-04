@@ -3,8 +3,6 @@
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -14,7 +12,7 @@ services:
       - PGID=1000
       - TZ=Europe/Warsaw
     volumes:
-      - /home/docker/prowlarr/config:/config
+      - /srv/server/services/prowlarr/config:/config
     ports:
       - 9696:9696
     restart: unless-stopped

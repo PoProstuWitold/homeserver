@@ -6,25 +6,23 @@ Homarr features [integrations](https://homarr.dev/docs/tags/integration/) with m
 - Media Server (Jellyfin)
 - Home Assistant
 - Calendar (upcoming content from Starr Apps)
-- Dash.
+- Dashdot
 - Indexer Manager (Prowlarr)
 - Download Speed (qBittorrent)
 
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   homarr:
-    container_name: homarr
     image: ghcr.io/ajnart/homarr:latest
-    restart: unless-stopped
+    container_name: homarr
+    ports:
+      - 7575:7575
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - /home/docker/homarr/configs:/app/data/configs
-      - /home/docker/homarr/icons:/app/public/icons
-      - /home/docker/homarr/data:/data
-    ports:
-      - '7575:7575'
+      - /srv/server/services/homarr/configs:/app/data/configs
+      - /srv/server/services/homarr/icons:/app/public/icons
+      - /srv/server/services/homarr/data:/data
+    restart: unless-stopped
 ```

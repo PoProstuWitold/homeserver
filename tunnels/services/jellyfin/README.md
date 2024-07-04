@@ -5,18 +5,16 @@ Remember to change your [timezone](https://kevinnovak.github.io/Time-Zone-Picker
 
 ``docker-compose.yml``
 ```yaml
-version: "3.8"
-
 services:
   jellyfin:
-    image: jellyfin/jellyfin
+    image: jellyfin/jellyfin:latest
     container_name: jellyfin
+    ports:
+      - 8096:8096
     environment:
       - TZ=Europe/Warsaw
     volumes:
-      - /home/docker/jellyfin/config:/config
-      - /home/docker/jellyfin/media:/data
-    ports:
-      - 8096:8096
+      - /srv/server/services/jellyfin/config:/config
+      - /srv/server/media:/data
     restart: unless-stopped
 ```

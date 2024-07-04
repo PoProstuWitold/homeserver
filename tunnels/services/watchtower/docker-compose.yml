@@ -1,20 +1,17 @@
-version: "3.8"
-
 services:
   watchtower:
     image: containrrr/watchtower:latest
     container_name: watchtower
-    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LOG_FORMAT=Pretty
       - WATCHTOWER_INCLUDE_RESTARTING=true
       - WATCHTOWER_INCLUDE_STOPPED=true
       - WATCHTOWER_REVIVE_STOPPED=false
-      - WATCHTOWER_NO_RESTART=false
       - WATCHTOWER_TIMEOUT=30s
-      - WATCHTOWER_SCHEDULE=0 0 19 * * *
-      - WATCHTOWER_DEBUG=false
+      - WATCHTOWER_SCHEDULE=0 0 1 * * *
       - TZ=Europe/Warsaw
     network_mode: bridge
+    restart: unless-stopped
