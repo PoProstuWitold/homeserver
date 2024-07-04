@@ -68,12 +68,12 @@ It has great documentation on its own and thanks to being binary compatible with
 	I also installed [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) plugins.
 
 
-## 3. Setup services
+## 3. Services
 At this point you have setup entire required infrastucture so you can finally have some fun exploring various selfhosted services :D
 
-Required:
+In every case you need to run:
 - **[Caddy](services/caddy)** - makes your sites more secure, more reliable, and more scalable than any other solution.
 - **[WireGuard VPN](services/wg_easy)** - the easiest way to run WireGuard VPN + Web-based Admin UI.
 
-Required if you don't have static public IP:
+Only required if you don't have static public IP:
 - **[Cloudflare DDNS](services/cloudflare_ddns)** - small, feature-rich, and robust Cloudflare DDNS updater.
