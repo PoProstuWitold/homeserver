@@ -4,9 +4,9 @@ In this section I will help you setup your personal server using ***Cloudflare T
 
 ## Goals & Features
 After following this tutorial you will have:
-- Secure access to your locally hosted services using [tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
+- Secure access to your selfhosted web services using [Cloudflare Tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
 - Remote access to your server from anywhere by [VNC](https://en.wikipedia.org/wiki/Virtual_Network_Computing) and from LAN by [SSH](https://en.wikipedia.org/wiki/Secure_Shell) from any device you want
-- Shared folders using [Samba](https://en.wikipedia.org/wiki/Samba_(software))
+- Shared over LAN folders using [Samba](https://en.wikipedia.org/wiki/Samba_(software))
 - Couple of web or standalone dockerized services
 - Minecraft server with *mc.**your-domain.tld***
 
