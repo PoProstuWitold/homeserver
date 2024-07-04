@@ -26,6 +26,7 @@ In case of both going with ***Cloudflare Tunnels*** or ***Port Forwarding*** you
 - Your own domain (you have to either buy it through Cloudflare or move your existing domain to their DNS servers).
 - A Cloudflare account.
 - A workstation where the server will be running.
+
 With ***Cloudflare Tunnels*** there are no further requirements but in case of ***Port Forwarding*** you will also need static or dynamic **public** IP.
 
 For more specific instructions go to one of below:
