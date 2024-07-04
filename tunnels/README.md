@@ -27,9 +27,10 @@ For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but yo
 
 ## 2. Remote connection
 Setup VNC and SSH to remote access your soon-to-be headless server.
-- ### 2a. VNC
+
 > **IMPORTANT!** You need to either download some dummy X11 driver or buy dummy HDMI adapter for about 4 euro
 
+- ### 2a. VNC
 	- 1. Install [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/) on your client (in my case Windows 11 Home).
 	- 2. Install RealVNC Server on your server:
 
