@@ -1,0 +1,17 @@
+services:
+  dashdot:
+    container_name: dashdot
+    image: mauricenino/dashdot:latest
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "3001:3001"
+    networks:
+      - caddy
+    volumes:
+      - /:/mnt/host:ro
+      
+networks:
+  caddy:
+    name: caddy
+    external: true

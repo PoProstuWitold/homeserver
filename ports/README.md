@@ -80,3 +80,6 @@ In every case you need to run:
 
 Only required if you don't have static public IP:
 - **[Cloudflare DDNS](services/cloudflare_ddns)** - small, feature-rich, and robust Cloudflare DDNS updater.
+
+Personal preference:
+- **[Dashdot](services/dashdot)** - a modern server dashboard.
