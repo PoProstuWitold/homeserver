@@ -7,7 +7,7 @@ In every case you need to run:
 
 Personal preference:
 - **[Jellyfin](jellyfin)** - the free software media system.
-- **[jellyseerr](jellyseerr)** - an application for managing request for your media library.
+- **[Jellyseerr](jellyseerr)** - an application for managing request for your media library.
 - **[NextCloud](nextcloud)** - a safe home for all your data.
 - **[Homarr](homarr)** - customizable browser's home page for your homeserver.
 - **[Mealie](mealie)** - a recipe manager for the modern household.
