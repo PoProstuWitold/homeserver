@@ -83,3 +83,4 @@ Only required if you don't have static public IP:
 
 Personal preference:
 - **[Dashdot](services/dashdot)** - a modern server dashboard.
+- **[Watchtower](services/watchtower)** - update your Docker containers automatically.

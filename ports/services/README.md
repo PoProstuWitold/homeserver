@@ -11,3 +11,4 @@ Only required if you don't have static public IP:
 
 Personal preference:
 - **[Dashdot](dashdot)** - a modern server dashboard.
+- **[Watchtower](watchtower)** - update your Docker containers automatically.
