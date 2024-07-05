@@ -9,7 +9,7 @@ After following this tutorial you will have:
 - Remote access from **your LAN** using [SSH](https://en.wikipedia.org/wiki/Secure_Shell)
 - Shared over LAN folders using [Samba](https://en.wikipedia.org/wiki/Samba_(software))
 - Couple of web or standalone dockerized services
-- Minecraft server with *mc.**your-domain.tld***
+- Minecraft server with ***mc.your-domain.tld***
 
 In the end your server may look like this (diagram made by me in [draw.io](https://draw.io/)):
 
@@ -182,7 +182,9 @@ so it will match Windows's default one.
 ## 5. Services
 Setup [Cloudflare Tunnels](services/tunnels) with [Portainer](services/portainer) to allow access to your services outside your home network, then add as many services as you want.
 
-In every case you need to run. Remember to add 2FA to some sensitive services such as Portainer:
+> **IMPORTANT!** Remember to add 2FA through Cloudflare Tunnels dashboard to some sensitive services such as Portainer:
+
+In every case you need to run. 
 - **[Cloudflare Tunnels](services/tunnels)** - Making Services Accesible Outside Your Home Network
 - **[Portainer](services/portainer)** - Easy Managment For Your Docker Stuff
 

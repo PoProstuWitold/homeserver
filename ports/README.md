@@ -9,7 +9,7 @@ After following this tutorial you will have:
 - Secure access to your selfhosted web services using [Caddy Reverse Proxy with Cloudflare DNS addon](https://github.com/SlothCroissant/caddy-cloudflaredns)
 - Remote access to your server from anywhere using [WireGuard VPN with WebUI](https://github.com/wg-easy/wg-easy)
 - Couple of web or standalone dockerized services
-- Minecraft server with *mc.**your-domain.tld***
+- Minecraft server with ***mc.your-domain.tld***
 
 <!-- In the end your server may look like this (diagram made by me in [draw.io](https://draw.io/)): -->
 
@@ -45,19 +45,21 @@ When you set up everything you need to forward these ports:
 
 ## 2. Install Your Preferred Linux Distribution
 
-For the distribution, I chose [AlmaLinux 9.4](https://almalinux.org/) because it's open source, community owned and binary compatible RHEL as well as it focuses on long-term stability and security which is espiecially important for me because this time I want to esentially *"set and forget"* my server and have minimum personal maintenance possible.
+For the distribution, I chose [AlmaLinux 9.4](https://almalinux.org/) because it’s open source, community-owned and binary-compatible with RHEL. It also focuses on long-term stability and security, which is especially important for me because this time I want to essentially "set and forget" my server and have minimal personal maintenance.
 
 It has great documentation on its own and thanks to being binary compatible with RHEL you can also use docs designed for RHEL, Rocky Linux, CentOS and many more RHEL clones.
 
 - ### 2a. Install your system and get recommended software
 
-    I highly recommend following all documentation below in that order. You can also find other documentation on [AlmaLinux Wiki](https://wiki.almalinux.org/)
+    I highly recommend following all documentation below in that order:
 
 	- [Installation](https://wiki.almalinux.org/documentation/installation-guide.html)
 	- [After-Installation](https://wiki.almalinux.org/documentation/after-installation-guide.html)
 	- [FirewallD](https://www.answertopia.com/almalinux/almalinux-firewall-configuration-with-firewalld/)
 	- [Docker](https://techviewleo.com/how-to-install-docker-ce-on-almalinux/)
 	- [SSH with keys](https://www.answertopia.com/almalinux/configuring-ssh-key-based-authentication-on-almalinux/)
+
+	For more of the offical AlmaLinux documentation you can check [AlmaLinux Wiki](https://wiki.almalinux.org/).
 
 
 - ### 2b. Change shell (optional)
@@ -74,6 +76,7 @@ At this point you have setup entire required infrastucture so you can finally ha
 In every case you need to run:
 - **[Caddy](services/caddy)** - makes your sites more secure, more reliable, and more scalable than any other solution.
 - **[WireGuard VPN](services/wg_easy)** - the easiest way to run WireGuard VPN + Web-based Admin UI.
+- **[Portainer](services/portainer)** - Easy Managment For Your Docker Stuff
 
 Only required if you don't have static public IP:
 - **[Cloudflare DDNS](services/cloudflare_ddns)** - small, feature-rich, and robust Cloudflare DDNS updater.
