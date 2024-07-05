@@ -5,7 +5,8 @@ In this section I will help you setup your personal server using ***Cloudflare T
 ## Goals & Features
 After following this tutorial you will have:
 - Secure access to your selfhosted web services using [Cloudflare Tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
-- Remote access to your server from anywhere by [VNC](https://en.wikipedia.org/wiki/Virtual_Network_Computing) and from LAN by [SSH](https://en.wikipedia.org/wiki/Secure_Shell) from any device you want
+- Remote access from the Internet using [VNC](https://en.wikipedia.org/wiki/Virtual_Network_Computing)
+- Remote access from **your LAN** using [SSH](https://en.wikipedia.org/wiki/Secure_Shell)
 - Shared over LAN folders using [Samba](https://en.wikipedia.org/wiki/Samba_(software))
 - Couple of web or standalone dockerized services
 - Minecraft server with *mc.**your-domain.tld***
@@ -21,7 +22,7 @@ For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but yo
 - ### 1a. Update your system
 	If you are using EndeavourOS just run ``yay`` in your terminal and type ``sudo`` password. For other distros find equivalent instructions.
 
-- ### 1b. Turn off auto-sleep
+- ### 1b. Turn off auto-sleep (only if using graphocal requirement or VNC)
 	This depends of your distribution and your graphical enviroment. Just google how to do that. It shouldn't be complicated.
 
 - ### 1c. Change shell (optional)
@@ -30,7 +31,7 @@ For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but yo
 	Change your default shell to [zsh](https://www.zsh.org/) and enable plugins wiht [oh-my-zsh](https://ohmyz.sh/)
 
 ## 2. Remote connection
-Setup VNC and SSH to remote access your soon-to-be headless server.
+Setup VNC and SSH to remote access your server.
 
 > **IMPORTANT!** You need to either download some dummy X11 driver or buy dummy HDMI adapter for about 4 euro
 
@@ -42,10 +43,7 @@ Setup VNC and SSH to remote access your soon-to-be headless server.
 	yay -S realvnc-vnc-server
 	```
 	```bash
-	sudo systemctl enable vncserver-x11-serviced
-	```
-	```bash
-	sudo systemctl start vncserver-x11-serviced
+	sudo systemctl enable --now vncserver-x11-serviced
 	```
  
 	After you do this, login to your RealVNC account on RealVNC Server. Make sure you check ``SHA-256`` encryption.
@@ -54,17 +52,13 @@ Setup VNC and SSH to remote access your soon-to-be headless server.
   	Install ``SSH`` and connect to it.
 
   	```bash
-	sudo systemctl enable sshd
-  	```
-
-  	```bash
-	sudo systemctl enable sshd
+	sudo systemctl enable --now sshd
   	```
 
   	then you can connect from any device within your LAN to your server by command:
   
   	```bash
-   ssh <username>@<hostname/ip-address>
+   ssh <username>@<hostname/your_local_ipv4_address>
    	```
 
 	for example:
@@ -75,7 +69,10 @@ Setup VNC and SSH to remote access your soon-to-be headless server.
   	type password for your user nad congrats! You are connected via SSH! With SSH you can connect to your server **from LAN only**.
 
 ## 3. Docker & Docker Compose
-Setup Docker with Docker Compose and add your user to "docker" group.
+Setup Docker with Docker Compose and add your user to "docker" group. This steps may vary depending on your Linux distro.
+
+> Visit offical [docker](https://docs.docker.com/compose/install/linux) website for instructions for your distribution
+
 - ### 3.1. Install Docker and add user to "docker" group
 	```bash
 	yay -S docker
@@ -87,13 +84,9 @@ Setup Docker with Docker Compose and add your user to "docker" group.
 	newgrp docker
 	```
 	```bash
-	sudo systemctl enable docker
+	sudo systemctl enable --now docker
 	```
-	```bash
-	sudo systemctl start docker
-	```
-- ### 3.2 Install ``compose`` plugin
-	> Visit offical [docker](https://docs.docker.com/compose/install/linux) website for instructions for your distribution
+- ### 3.2 Install ``docker-compose`` plugin
 	```bash
 	DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
 	```
@@ -113,10 +106,7 @@ Install and enable firewall to prevent common attacks:
 yay -S firewalld
 ```
 ```bash
-sudo systemctl enable firewalld.service
-```
-```bash
-sudo systemctl start firewalld.service
+sudo systemctl enable --now firewalld.service
 ```
 
 ### 5. Shared folders
@@ -125,7 +115,7 @@ Install ``Samba`` package:
 yay -S samba
 ```
 
-As ``Samba`` doesn't come with config file, we need to create one. I will use official config file from Samba [repository](https://git.samba.org/samba.git/?p=samba.git;a=blob_plain;f=examples/smb.conf.default;hb=HEAD).
+As ``Samba`` doesn't come with config file, we need to create one. I will use official config file from [Samba repository](https://git.samba.org/samba.git/?p=samba.git;a=blob_plain;f=examples/smb.conf.default;hb=HEAD).
 Paste this config here:
 ```bash
 sudo nano /etc/samba/smb.conf
@@ -147,9 +137,6 @@ so it will match Windows's default one.
 	```bash
 	systemctl enable --now smb.service
 	```
-	```bash
-	systemctl enable --now nmb.service
-	```
 
 - ### 5.2 Samba group
 	Create ``sambausers`` group and add yourself to it:
@@ -157,15 +144,15 @@ so it will match Windows's default one.
 	sudo groupadd -r sambausers
 	```
 	```bash
-	sudo usermod -aG sambausers YOURUSERNAME
+	sudo usermod -aG sambausers YOUR_USERNAME
 	```
 	Create samba password for your shares:
 	```bash
-	sudo smbpasswd -a YOURUSERNAME
+	sudo smbpasswd -a YOUR_USERNAME
 	```
 
 - ### 5.3 Example share
-	I will use my ``Jellyfin`` media library as example yet practical share.
+	I will use my Jellyfin media library as an exemplary yet practical share.
 
 	Scroll to the bottom and add:
 	```bash
@@ -180,7 +167,7 @@ so it will match Windows's default one.
 	guest ok = no
 	```
 
-	> At this point make sure that directory you specified in share's path actually exists! If not run [Jellyfin](services/jellyfin) service or create it:
+	> At this point make sure that directory you specified in share's path **actually exists**! If not run [Jellyfin](services/jellyfin) service or create it manually with:
 	> ``sudo mkdir /srv/server/media``
 
 	Change directory ownership and permissions:
@@ -195,9 +182,9 @@ so it will match Windows's default one.
 ## 5. Services
 Setup [Cloudflare Tunnels](services/tunnels) with [Portainer](services/portainer) to allow access to your services outside your home network, then add as many services as you want.
 
-In every case you need to run:
-- **[Cloudflare Tunnels](services/tunnels)** - making services accesible outside your home network
-- **[Portainer](services/portainer)** - easy managment for dockerized services
+In every case you need to run. Remember to add 2FA to some sensitive services such as Portainer:
+- **[Cloudflare Tunnels](services/tunnels)** - Making Services Accesible Outside Your Home Network
+- **[Portainer](services/portainer)** - Easy Managment For Your Docker Stuff
 
 Optional:
 - **[Jellyfin](services/jellyfin)** - The Free Software Media System
