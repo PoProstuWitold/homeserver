@@ -185,21 +185,21 @@ Setup [Cloudflare Tunnels](services/tunnels) with [Portainer](services/portainer
 > **IMPORTANT!** Remember to add 2FA through Cloudflare Tunnels dashboard to some sensitive services such as Portainer:
 
 In every case you need to run. 
-- **[Cloudflare Tunnels](services/tunnels)** - Making Services Accesible Outside Your Home Network
-- **[Portainer](services/portainer)** - Easy Managment For Your Docker Stuff
+- **[Cloudflare Tunnels](services/tunnels)** - making services accesible outside your home network.
+- **[Portainer](services/portainer)** - easy managment for your Docker stuff.
 
-Optional:
-- **[Jellyfin](services/jellyfin)** - The Free Software Media System
-- **[Jellyseerr](services/jellyseerr)** - Application For Managing Requests For Your Media Library
-- **[NextCloud](services/nextcloud)** - A Safe Home For All Your Data
-- **[Homarr](services/homarr)** - customizable browser's home page for your homeserver
-- **[Mealie](services/mealie)** - Recipe Management For The Modern Household
-- **[Linkding](services/linkding)** - Self-hosted bookmark manager
-- **[Uptime Kuma](services/uptime_kuma)** - A Fancy Self-Hosted Monitoring Tool
-- **[Minecraft](services/minecraft)** - Minecraft server with your own IP
-- **[dashdot](services/dashdot)** - a modern server dashboard
-- **[Watchtower](services/watchtower)** - update your Docker containers automatically
-- **[qBittorrent](services/qbittorrent)** - qBittorrent BitTorrent client
-- **[Starr Apps](services/starr_apps)** - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks
-- **[Home Assistant](services/homeassistant)** - open source home automation that puts local control and privacy first
+Personal preference:
+- **[Jellyfin](services/jellyfin)** - the free software media system.
+- **[Jellyseerr](services/jellyseerr)** - an application for managing request for your media library.
+- **[NextCloud](services/nextcloud)** - a safe home for all your data.
+- **[Homarr](services/homarr)** - customizable browser's home page for your homeserver.
+- **[Mealie](services/mealie)** - a recipe manager for the modern household.
+- **[Linkding](services/linkding)** - selfhosted bookmark manager.
+- **[Uptime Kuma](services/uptime_kuma)** - a fancy selfhosted monitoring tool.
+- **[Minecraft](services/minecraft)** - Minecraft server with your own IP.
+- **[dashdot](services/dashdot)** - a modern server dashboard.
+- **[Watchtower](services/watchtower)** - update your Docker containers automatically.
+- **[qBittorrent](services/qbittorrent)** - qBittorrent BitTorrent client.
+- **[Starr Apps](services/starr_apps)** - collection managers apps with similar functionalities for anime, tv shows, movies, music and ebooks.
+- **[Home Assistant](services/homeassistant)** - open source home automation that puts local control and privacy first.
 - **[Custom service](services/custom)**
