@@ -10,6 +10,7 @@ Only required if you don't have static public IP:
 - **[Cloudflare DDNS](cloudflare_ddns)** - small, feature-rich, and robust Cloudflare DDNS updater.
 
 Personal preference:
+- **[Nextcloud All-In-One](nextcloud_aio)** - the official Nextcloud installation method.
 - **[Dashdot](dashdot)** - a modern server dashboard.
 - **[Homarr](homarr)** - customizable browser's home page for your homeserver.
 - **[Mealie](mealie)** - a recipe manager for the modern household.
