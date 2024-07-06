@@ -12,4 +12,5 @@ Only required if you don't have static public IP:
 Personal preference:
 - **[Dashdot](dashdot)** - a modern server dashboard.
 - **[Homarr](homarr)** - customizable browser's home page for your homeserver.
+- **[Mealie](mealie)** - a recipe manager for the modern household.
 - **[Watchtower](watchtower)** - update your Docker containers automatically.

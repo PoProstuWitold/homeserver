@@ -1,0 +1,27 @@
+services:
+  mealie:
+    container_name: mealie
+    image: hkotel/mealie:latest
+    ports:
+      - 9091:9000
+    deploy:
+      resources:
+        limits:
+          memory: 1000M 
+    networks:
+      - caddy
+    environment:
+      ALLOW_SIGNUP: true
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Warsaw
+      BASE_URL: https://mealie.your-domain.tld
+    volumes:
+      - /srv/server/services/mealie:/app/data
+    restart: unless-stopped
+
+
+networks:
+  caddy:
+    name: caddy
+    external: true
