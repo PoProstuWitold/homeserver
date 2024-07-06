@@ -20,20 +20,18 @@ In the end your server may look like this (diagram made by me in [draw.io](https
 For the Linux distro, I will use [EndeavourOS](https://endeavouros.com/), but you can use any Arch-based distro (e.g. Manjaro, Garuda, or plain Arch) to essentially copy-paste commands. I chose EndeavourOS, because it comes with some useful stuff (that I will eventually need) installed and already configured and it has ISOs with many DE (KDE Plasma, Gnome, Xfce4 and more). If you opt for a non-Arch-based distro, you will need to find equivalent instructions for your chosen distribution.
 
 - ### 1a. Update your system
-	If you are using EndeavourOS just run ``yay`` in your terminal and type ``sudo`` password. For other distros find equivalent instructions.
+	If you are using EndeavourOS just run ``yay``. For other distros find equivalent instructions.
 
-- ### 1b. Turn off auto-sleep (only if using graphocal requirement or VNC)
-	This depends of your distribution and your graphical enviroment. Just google how to do that. It shouldn't be complicated.
+- ### 1b. Turn off auto-sleep (only if using graphical environment or/and VNC)
+	This depends of your distribution and your graphical environment. Just google how to do that. It shouldn't be complicated.
 
 - ### 1c. Change shell (optional)
-	This is just my preferance. You can completely ignore that step.
-
-	Change your default shell to [zsh](https://www.zsh.org/) and enable plugins wiht [oh-my-zsh](https://ohmyz.sh/)
+	Change your default shell to [zsh](https://www.zsh.org/) and enable plugins with [oh-my-zsh](https://ohmyz.sh/)
 
 ## 2. Remote connection
 Setup VNC and SSH to remote access your server.
 
-> **IMPORTANT!** You need to either download some dummy X11 driver or buy dummy HDMI adapter for about 4 euro
+> **IMPORTANT!** You need to either download some dummy X11 driver (not recommended) or buy dummy HDMI adapter for about 4 euro (recommended).
 
 - ### 2a. VNC
 	- 1. Install [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/) on your client (in my case Windows 11 Home).
@@ -49,16 +47,16 @@ Setup VNC and SSH to remote access your server.
 	After you do this, login to your RealVNC account on RealVNC Server. Make sure you check ``SHA-256`` encryption.
 	Reboot and boom! You have encrypted VNC connection! With VNC you can connect to your server **from anywhere**.
 - ### 2b. SSH
-  	Install ``SSH`` and connect to it.
+  	``SSH`` server should be pre-installed on most Linux distros but if it isn't on yours, then you have to install it to complete steps below.
 
   	```bash
 	sudo systemctl enable --now sshd
   	```
 
-  	then you can connect from any device within your LAN to your server by command:
+  	now you can connect from any device within your LAN to your server by command:
   
   	```bash
-   ssh <username>@<hostname/your_local_ipv4_address>
+    ssh <username>@<hostname/your_local_ipv4_address>
    	```
 
 	for example:
@@ -66,7 +64,11 @@ Setup VNC and SSH to remote access your server.
    	ssh myAwesomeLinuxUsername@192.168.0.18
    	```
     
-  	type password for your user nad congrats! You are connected via SSH! With SSH you can connect to your server **from LAN only**.
+  	type password for your user and congrats! You are connected via SSH! With SSH you can connect to your server **from LAN only**. 
+	
+	I also recommend setting key-based auth as well as disable ``root`` login and password login. Everything about that is covered in **Port Forwarding** part of this repository.
+
+	If you want to connect from the Internet you can check something like [Tailscale](https://tailscale.com/) or buy some VPS.
 
 ## 3. Docker & Docker Compose
 Setup Docker with Docker Compose and add your user to "docker" group. This steps may vary depending on your Linux distro.
@@ -116,6 +118,7 @@ yay -S samba
 ```
 
 As ``Samba`` doesn't come with config file, we need to create one. I will use official config file from [Samba repository](https://git.samba.org/samba.git/?p=samba.git;a=blob_plain;f=examples/smb.conf.default;hb=HEAD).
+
 Paste this config here:
 ```bash
 sudo nano /etc/samba/smb.conf
@@ -157,7 +160,7 @@ so it will match Windows's default one.
 	Scroll to the bottom and add:
 	```bash
 	[Media]
-	comment = Media
+	comment = Jellyfin Media
 	path = /srv/server/media
 	writable = yes
 	browsable = yes
@@ -182,7 +185,7 @@ so it will match Windows's default one.
 ## 5. Services
 Setup [Cloudflare Tunnels](services/tunnels) with [Portainer](services/portainer) to allow access to your services outside your home network, then add as many services as you want.
 
-> **IMPORTANT!** Remember to add 2FA through Cloudflare Tunnels dashboard to some sensitive services such as Portainer:
+> **IMPORTANT!** Remember to add 2FA through Cloudflare Tunnels dashboard to some sensitive services such as Portainer.
 
 In every case you need to run. 
 - **[Cloudflare Tunnels](services/tunnels)** - making services accesible outside your home network.

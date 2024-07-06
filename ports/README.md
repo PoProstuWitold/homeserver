@@ -17,11 +17,11 @@ After following this tutorial you will have:
 
 ## 1. Public IP and Port Forwarding
 
-If your ISP offers a static IP address then get it. It won't cost that much and it will make your life easier. Also ensure if your ISP **doesn't block** port forwarding for certain ports.
+If your ISP offers a static IP address then get it. It won't cost that much and it will make your life easier. Also ensure if your ISP **doesn't block** port forwarding for certain or all ports.
 
 If your ISP doesn't offer static IP then you have to get your own router. Otherwise you don't have to do it but I really recommend you to get one. I personally use [ASUS RT-AX53U](https://www.asus.com/networking-iot-servers/wifi-routers/asus-wifi-routers/rt-ax53u/) which costed me about 50 euro.
 
-With dynamic public IP you have the problem that it is... Well dynamic haha. So it changes. With various frequency but eventually changes. 
+With dynamic public IP you have the problem that it is... Well dynamic haha. So it changes. With various frequency but it eventually changes. 
 
 You have to use [DDNS](https://en.wikipedia.org/wiki/Dynamic_DNS). Most ASUS devices have it already built-in in router with DDNS address that looks like ``your-name.asuscomm.com``. Check if your device has such function. If not or you think ASUS DDNS isn't reliable, then you can always use different methods to do it. 
 
@@ -63,19 +63,17 @@ It has great documentation on its own and thanks to being binary compatible with
 
 
 - ### 2b. Change shell (optional)
-	This is just my preferance. You can completely ignore that step.
-
 	Change your default shell to [zsh](https://www.zsh.org/) and enable plugins wiht [oh-my-zsh](https://ohmyz.sh/).
 
-	I also installed [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) plugins.
+	I installed [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) plugins.
 
 
 ## 3. Services
-At this point you have setup entire required infrastucture so you can finally have some fun exploring various selfhosted services :D
+At this point you have entire required infrastucture running so you can finally have some fun exploring various selfhosted services :D
 
 In every case you need to run:
 - **[Caddy](services/caddy)** - makes your sites more secure, more reliable, and more scalable than any other solution.
-- **[WireGuard VPN](services/wg_easy)** - the easiest way to run WireGuard VPN + Web-based Admin UI.
+- **[WireGuard Easy](services/wg_easy)** - the easiest way to run WireGuard VPN + Web-based Admin UI.
 - **[Portainer](services/portainer)** - easy managment for your Docker stuff.
 
 Only required if you don't have static public IP:

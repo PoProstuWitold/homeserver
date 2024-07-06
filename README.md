@@ -3,8 +3,10 @@ In this guide, you’ll find easy-to-follow steps to set up your own server at h
 
 Please note that some parts of this guide are based on my personal preferences (e.g. the choice of Linux distros), and your setup for certain things may slightly differ. Let’s begin, shall we?
 
+> **IMPORTANT!** I'll try to keep this guide free of any costs besides power consumption and domain reneval and one-time purchases such as a router, therefore some things such as VPS or any subscription-based services may not be covered.
 
-## 0. Things to Consider: Power Consumption Hardware, Recommended Steps & Requirements
+
+## 0. Things to Consider: Power Consumption, Hardware, Recommended Steps & Requirements
 
 ### Power Consumption
 Remember that your server is likely going to run 24/7, so keep in mind the energy consumption of your workstation and its noise. You can use your old PC, a [Raspberry Pi 4](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/), or some mini PC (I recommend older, used HP, Dell, Lenovo, or Intel NUC models). In this guide, I will be using an **[Intel NUC11TNHI5](https://www.intel.com/content/www/us/en/products/sku/205594/intel-nuc-11-pro-kit-nuc11tnhi5/specifications.html)** with 32GB RAM and a 2TB SSD, as it only consumes 28W of energy. It’s not necessary to buy exactly the same hardware as mine to follow this tutorial.
@@ -19,7 +21,7 @@ In terms of hardware, here are my recommendations:
 
 
 ### Recommended Steps
-Although it is not required I recommend updating your BIOS. Just google "bios download" and your name of your motherboard or name of your machine (premade PC, laptop).
+Although it is not required I recommend updating your BIOS. Just google "bios download" and name of your motherboard or name of your device (e.g. premade PC, laptop).
 
 
 ### Requirements
