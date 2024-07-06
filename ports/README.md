@@ -76,7 +76,7 @@ At this point you have setup entire required infrastucture so you can finally ha
 In every case you need to run:
 - **[Caddy](services/caddy)** - makes your sites more secure, more reliable, and more scalable than any other solution.
 - **[WireGuard VPN](services/wg_easy)** - the easiest way to run WireGuard VPN + Web-based Admin UI.
-- **[Portainer](services/portainer)** - Easy Managment For Your Docker Stuff
+- **[Portainer](services/portainer)** - easy managment for your Docker stuff.
 
 Only required if you don't have static public IP:
 - **[Cloudflare DDNS](services/cloudflare_ddns)** - small, feature-rich, and robust Cloudflare DDNS updater.
