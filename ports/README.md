@@ -85,4 +85,5 @@ Personal preference:
 - **[Dashdot](services/dashdot)** - a modern server dashboard.
 - **[Homarr](services/homarr)** - customizable browser's home page for your homeserver.
 - **[Mealie](services/mealie)** - a recipe manager for the modern household.
+- **[Minecraft](services/minecraft)** - Minecraft server with your own IP.
 - **[Watchtower](services/watchtower)** - update your Docker containers automatically.
