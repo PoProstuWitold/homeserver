@@ -83,4 +83,5 @@ Only required if you don't have static public IP:
 
 Personal preference:
 - **[Dashdot](services/dashdot)** - a modern server dashboard.
+- **[Homarr](services/homarr)** - customizable browser's home page for your homeserver.
 - **[Watchtower](services/watchtower)** - update your Docker containers automatically.
