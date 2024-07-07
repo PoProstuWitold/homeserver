@@ -20,6 +20,7 @@ services:
       - CLOUDFLARE_EMAIL=YOUR_CLOUDFLARE_EMAIL
       - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
       - ACME_AGREE=true
+      - BASE_URL=your-domain.tld
     restart: unless-stopped
 
 networks:

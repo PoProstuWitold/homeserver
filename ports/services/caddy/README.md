@@ -17,24 +17,42 @@ Example config file for Caddy:
 
 ``Caddyfile``
 ```python
-*.your-domain.tld {
-  @mealie host mealie.your-domain.tld
-  handle @mealie {
-    # note that the port must be the one inside Docker, not mapped one
-    reverse_proxy mealie:9000
-  }
-
+# global acme_dns option wasn't working for me for some reason
+(tls) {
   tls {
     dns cloudflare {env.CLOUDFLARE_API_TOKEN}
   }
 }
 
-your-domain.tld {
-  reverse_proxy homarr:7575
+*.{env.BASE_URL} {
+  import tls
 
-  tls {
-    dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+  @mealie host mealie.{env.BASE_URL}
+  handle @mealie {
+    reverse_proxy mealie:9000
   }
+
+  @dashdot host dashdot.{env.BASE_URL}
+  handle @dashdot {
+    reverse_proxy dashdot:3001
+  }
+
+  @nextcloud host nextcloud.{env.BASE_URL}
+  handle @nextcloud {
+    reverse_proxy nextcloud-aio-apache:11000
+  }
+
+  # handle not found error, because Caddy
+  # by default returns status 200 and empty page
+  @not_found host *.{env.BASE_URL}
+  handle @not_found {
+    respond "Not Found" 404
+  }
+}
+
+{env.BASE_URL} {
+  import tls
+  reverse_proxy homarr:7575
 }
 ```
 
@@ -63,6 +81,7 @@ services:
       - CLOUDFLARE_EMAIL=YOUR_CLOUDFLARE_EMAIL
       - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
       - ACME_AGREE=true
+      - BASE_URL=your-domain.tld
     restart: unless-stopped
 
 networks:
