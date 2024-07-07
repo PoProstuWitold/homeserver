@@ -1,5 +1,5 @@
 # Services - Cloudflare Tunnels
-There are all services I made config for. All you need to do is follow instructions for particular service (such as change password) and run them either in Docker.
+There are all services I made configs for. All you need to do is follow instructions for particular service (such as change password) and run them either in Docker.
 
 In every case you need to run:
 - **[Cloudflare Tunnels](tunnels)** - making services accesible outside your home network.
