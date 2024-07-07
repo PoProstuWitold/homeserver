@@ -1,5 +1,5 @@
 # Services - Port Forwarding
-There are all services I made config for. All you need to do is follow instructions for particular service (such as change password) and run them either in Docker.
+There are all services I made configs for. All you need to do is follow instructions for particular service (such as change password) and run them either in Docker.
 
 In every case you need to run:
 - **[Caddy](caddy)** - makes your sites more secure, more reliable, and more scalable than any other solution.
@@ -13,6 +13,7 @@ Personal preference:
 - **[Nextcloud All-In-One](nextcloud_aio)** - the official Nextcloud installation method.
 - **[Dashdot](dashdot)** - a modern server dashboard.
 - **[Homarr](homarr)** - customizable browser's home page for your homeserver.
+- **[Linkwarden](linkwarden)** - collaborative bookmark manager to collect, organize, and preserve webpages and articles.
 - **[Mealie](mealie)** - a recipe manager for the modern household.
 - **[Minecraft](minecraft)** - Minecraft server with your own IP.
 - **[Watchtower](watchtower)** - update your Docker containers automatically.
