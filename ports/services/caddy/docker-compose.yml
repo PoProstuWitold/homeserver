@@ -1,23 +1,22 @@
 services:
   caddy:
-    image: slothcroissant/caddy-cloudflaredns:latest
+    image: serfriz/caddy-cloudflare-ddns-crowdsec-geoip-security:latest
     container_name: caddy
-    labels:
-    # makes watchtower not update caddy but still monitor it
-      - "com.centurylinklabs.watchtower.monitor-only=true"
+    cap_add:
+      - NET_ADMIN
     ports:
-      - 80:80
-      - 443:443
+      - "80:80" # HTTP port
+      - "443:443" # HTTPS port
+      - "443:443/udp" # HTTP/3 port (optional)
     networks:
       - caddy
-      # uncomment if you want to use nextcloud-aio
-      # - nextcloud-aio
+      - nextcloud-aio
     volumes:
       - /srv/server/services/caddy/data:/data
       - /srv/server/services/caddy/config:/config
       - /srv/server/services/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - /srv/server/services/caddy/logs:/var/log/caddy
     environment:
-      - CLOUDFLARE_EMAIL=YOUR_CLOUDFLARE_EMAIL
       - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
       - ACME_AGREE=true
       - BASE_URL=your-domain.tld
@@ -27,7 +26,6 @@ networks:
   caddy:
     name: caddy
     external: true
-  # uncomment if you want to use nextcloud-aio
-  # nextcloud-aio:
-    # name: nextcloud-aio
-    # external: true
+  nextcloud-aio:
+    name: nextcloud-aio
+    external: true
