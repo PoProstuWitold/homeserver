@@ -20,7 +20,25 @@ services:
       - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
       - ACME_AGREE=true
       - BASE_URL=your-domain.tld
+      - CROWDSEC_API_KEY=
     restart: unless-stopped
+    
+  crowdsec:
+    image: docker.io/crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    environment:
+      - GID=1000
+      - COLLECTIONS=crowdsecurity/caddy crowdsecurity/http-cve crowdsecurity/whitelist-good-actors
+      - BOUNCER_KEY_CADDY=
+    volumes:
+      - /srv/server/services/crowdsec/db:/var/lib/crowdsec/data/
+      - /srv/server/services/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - /srv/server/services/caddy/logs:/var/log/caddy:ro
+    networks:
+      - caddy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges=true
 
 networks:
   caddy:

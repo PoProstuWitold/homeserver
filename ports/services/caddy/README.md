@@ -23,7 +23,16 @@ Example config file for Caddy:
 
 	log default {
 		level debug
+		# important for crowdsec to read logs and work
+		output file /var/log/caddy/access.log
 	}
+
+	# crowdsec
+	crowdsec {
+		api_url http://crowdsec:8080
+		api_key {env.CROWDSEC_API_KEY}
+	}
+	order crowdsec first
 
 	# caddy-cloudflare-ip
 	servers {
@@ -33,6 +42,7 @@ Example config file for Caddy:
 }
 
 (web) {
+	crowdsec
 	encode zstd gzip
 
 	# caddy-cloudflare-dns
@@ -78,6 +88,28 @@ Example config file for Caddy:
 }
 ```
 
+## Crowdsec
+
+If you want to use ***Crowdsec** module, you need to do a couple of things.
+
+1. Create ``acquis.yaml`` file in your chosen location and fill it with following:
+
+```yaml
+filenames:
+  - /var/log/caddy/*.log
+labels:
+  type: caddy
+```
+
+2. Generate ``CROWDSEC_API_KEY``
+
+You can do this with command:
+
+```bash
+echo "CROWDSEC_API_KEY=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 32)"
+```
+
+After that paste it to ``CROWDSEC_API_KEY`` in **caddy** service and ``BOUNCER_KEY_CADDY`` in **crowdsec** service.
 
 ``docker-compose.yml``
 ```yaml
@@ -103,7 +135,25 @@ services:
       - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
       - ACME_AGREE=true
       - BASE_URL=your-domain.tld
+      - CROWDSEC_API_KEY=
     restart: unless-stopped
+    
+  crowdsec:
+    image: docker.io/crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    environment:
+      - GID=1000
+      - COLLECTIONS=crowdsecurity/caddy crowdsecurity/http-cve crowdsecurity/whitelist-good-actors
+      - BOUNCER_KEY_CADDY=
+    volumes:
+      - /srv/server/services/crowdsec/db:/var/lib/crowdsec/data/
+      - /srv/server/services/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - /srv/server/services/caddy/logs:/var/log/caddy:ro
+    networks:
+      - caddy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges=true
 
 networks:
   caddy:
