@@ -17,74 +17,86 @@ Example config file for Caddy:
 
 ``Caddyfile``
 ```python
-# global acme_dns option wasn't working for me for some reason
 {
-	debug
+	# global acme_dns option wasn't working for me for some reason
+    debug
 
-	log default {
-		level debug
-		# important for crowdsec to read logs and work
-		output file /var/log/caddy/access.log
-	}
+    log default {
+        level debug
+        output file /var/log/caddy/access.log
+    }
 
-	# crowdsec
-	crowdsec {
-		api_url http://crowdsec:8080
-		api_key {env.CROWDSEC_API_KEY}
-	}
-	order crowdsec first
+    # crowdsec
+    crowdsec {
+        api_url http://crowdsec:8080
+        api_key {env.CROWDSEC_API_KEY}
+    }
+    order crowdsec first
 
-	# caddy-cloudflare-ip
-	servers {
-		trusted_proxies cloudflare
-		client_ip_headers CF-Connecting-IP
-	}
+    # caddy-cloudflare-ip
+    servers {
+        trusted_proxies cloudflare
+        client_ip_headers CF-Connecting-IP
+    }
 }
 
 (web) {
-	crowdsec
-	encode zstd gzip
+    crowdsec
+    encode zstd gzip
 
-	# caddy-cloudflare-dns
-	tls {
-		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-	}
+    handle_errors {
+        rewrite * /{http.error.status_code}
+        reverse_proxy https://http.cat
+    }
+
+    # caddy-cloudflare-dns
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
 }
 
 *.{env.BASE_URL} {
-	import web
+    import web
 
-	# Internet
-	@mealie host mealie.{env.BASE_URL}
-	handle @mealie {
-		reverse_proxy mealie:9000
-	}
+    # Internet
+    @mealie host mealie.{env.BASE_URL}
+    handle @mealie {
+        reverse_proxy mealie:9000
+    }
 
-	@dashdot host dashdot.{env.BASE_URL}
-	handle @dashdot {
-		reverse_proxy dashdot:3001
-	}
+    @dashdot host dashdot.{env.BASE_URL}
+    handle @dashdot {
+        reverse_proxy dashdot:3001
+    }
 
-	@nextcloud host nextcloud.{env.BASE_URL}
-	handle @nextcloud {
-		reverse_proxy nextcloud-aio-apache:11000
-	}
+    @nextcloud host nextcloud.{env.BASE_URL}
+    handle @nextcloud {
+        reverse_proxy nextcloud-aio-apache:11000
+    }
 
-	@linkwarden host linkwarden.{env.BASE_URL}
-	handle @linkwarden {
-		reverse_proxy linkwarden:3000
-	}
+    @linkwarden host linkwarden.{env.BASE_URL}
+    handle @linkwarden {
+        reverse_proxy linkwarden:3000
+    }
 
-	# Error handling
-	@not_found host *.{env.BASE_URL}
-	handle @not_found {
-		respond "Not Found" 404
-	}
+    # Not Found
+    @not_found host *.{env.BASE_URL}
+    handle @not_found {
+        respond "Not Found" 404
+    }
 }
 
 {env.BASE_URL} {
-	import web
-	reverse_proxy homarr:7575
+    import web
+
+    @geoip_filter {
+        maxmind_geolocation {
+            db_path "/etc/caddy/GeoLite2-City.mmdb"
+            allow_countries PL
+        }
+    }
+
+    reverse_proxy @geoip_filter homarr:7575
 }
 ```
 
@@ -110,6 +122,32 @@ echo "CROWDSEC_API_KEY=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 32)"
 ```
 
 After that paste it to ``CROWDSEC_API_KEY`` in **caddy** service and ``BOUNCER_KEY_CADDY`` in **crowdsec** service.
+
+## GeoLite2
+
+If you want to use **GeoLite2** module, you need to do a couple of things.
+
+1. Create developer account on [dev.maxmind.com](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data).
+
+2. Get your ``ACCOUNT_ID`` and ``LICENSE_KEY``. Instructions how to do that are at [dev.maxmind.com](https://dev.maxmind.com/geoip/updating-databases#directly-downloading-databases)
+
+3. Head to your **caddy** directory and run command:
+
+```bash
+sudo wget --content-disposition --user=ACCOUNT_ID --password=LICENSE_KEY 'https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz'
+```
+
+4. Untar your map. Note that your downloaded map name may be different:
+
+```bash
+sudo tar -xvzf GeoLite2-City_20240709.tar.gz 
+```
+
+5. Move your ``GeoLite2-City.mmdb`` file to root **caddy** directory:
+
+```bash
+sudo mv ./GeoLite2-City_20240709/GeoLite2-City.mmdb ./GeoLite2-City.mmdb 
+```
 
 ``docker-compose.yml``
 ```yaml
