@@ -90,7 +90,7 @@ Example config file for Caddy:
 
 ## Crowdsec
 
-If you want to use ***Crowdsec** module, you need to do a couple of things.
+If you want to use **Crowdsec** module, you need to do a couple of things.
 
 1. Create ``acquis.yaml`` file in your chosen location and fill it with following:
 
