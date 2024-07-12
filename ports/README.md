@@ -86,4 +86,5 @@ Personal preference:
 - **[Linkwarden](services/linkwarden)** - collaborative bookmark manager to collect, organize, and preserve webpages and articles. 
 - **[Mealie](services/mealie)** - a recipe manager for the modern household.
 - **[Minecraft](services/minecraft)** - Minecraft server with your own IP.
+- **[Grafana & Prometheus](services/grafana_prometheus)** - an open and composable observability and data visualization platform with Prometheus data source.
 - **[Watchtower](services/watchtower)** - update your Docker containers automatically.
