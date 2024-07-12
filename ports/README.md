@@ -85,6 +85,7 @@ Personal preference:
 - **[Homarr](services/homarr)** - customizable browser's home page for your homeserver.
 - **[Linkwarden](services/linkwarden)** - collaborative bookmark manager to collect, organize, and preserve webpages and articles. 
 - **[Mealie](services/mealie)** - a recipe manager for the modern household.
+- **[Jellyfin & Jellyseerr](services/jellyfin_jellyseerr)** - a free software media system that puts you in control of managing and streaming your media with app for managing requests for your media library.
 - **[Minecraft](services/minecraft)** - Minecraft server with your own IP.
 - **[Grafana & Prometheus](services/grafana_prometheus)** - an open and composable observability and data visualization platform with Prometheus data source.
 - **[Watchtower](services/watchtower)** - update your Docker containers automatically.
