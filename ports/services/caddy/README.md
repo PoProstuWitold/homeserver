@@ -18,12 +18,14 @@ Example config file for Caddy:
 ``Caddyfile``
 ```python
 {
-	# global acme_dns option wasn't working for me for some reason
     debug
-
     log default {
-        level debug
-        output file /var/log/caddy/access.log
+        format json
+        output file /var/log/caddy/access.log {
+            roll_size 100MiB
+            roll_keep 10
+            roll_keep_for 100d
+        }
     }
 
     # crowdsec
@@ -37,6 +39,7 @@ Example config file for Caddy:
     servers {
         trusted_proxies cloudflare
         client_ip_headers CF-Connecting-IP
+        metrics
     }
 }
 
@@ -77,6 +80,32 @@ Example config file for Caddy:
     @linkwarden host linkwarden.{env.BASE_URL}
     handle @linkwarden {
         reverse_proxy linkwarden:3000
+    }
+
+    @uptime_kuma host uptime.{env.BASE_URL}
+    handle @uptime_kuma {
+        reverse_proxy uptime_kuma:3001
+    }
+
+    @grafana host grafana.{env.BASE_URL}
+    handle @grafana {
+        reverse_proxy grafana:3000
+    }
+
+    @jellyfin host jellyfin.{env.BASE_URL}
+    handle @jellyfin {
+        reverse_proxy jellyfin:8096
+    }
+
+    @jellyseerr host jellyseerr.{env.BASE_URL}
+    handle @jellyseerr {
+        reverse_proxy jellyseerr:5055
+    }
+
+    # Metrics
+    @metrics host metrics.{env.BASE_URL}
+    handle @metrics {
+        metrics
     }
 
     # Not Found
@@ -169,6 +198,7 @@ services:
       - /srv/server/services/caddy/config:/config
       - /srv/server/services/caddy/Caddyfile:/etc/caddy/Caddyfile
       - /srv/server/services/caddy/logs:/var/log/caddy
+      - /srv/server/services/caddy/GeoLite2-City.mmdb:/etc/caddy/GeoLite2-City.mmdb
     environment:
       - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
       - ACME_AGREE=true
@@ -187,6 +217,8 @@ services:
       - /srv/server/services/crowdsec/db:/var/lib/crowdsec/data/
       - /srv/server/services/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
       - /srv/server/services/caddy/logs:/var/log/caddy:ro
+    ports:
+      - 6060:6060 # Prometheus API endpoint
     networks:
       - caddy
     restart: unless-stopped

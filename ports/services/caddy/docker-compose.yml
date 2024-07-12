@@ -16,6 +16,7 @@ services:
       - /srv/server/services/caddy/config:/config
       - /srv/server/services/caddy/Caddyfile:/etc/caddy/Caddyfile
       - /srv/server/services/caddy/logs:/var/log/caddy
+      - /srv/server/services/caddy/GeoLite2-City.mmdb:/etc/caddy/GeoLite2-City.mmdb
     environment:
       - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
       - ACME_AGREE=true
@@ -34,6 +35,8 @@ services:
       - /srv/server/services/crowdsec/db:/var/lib/crowdsec/data/
       - /srv/server/services/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
       - /srv/server/services/caddy/logs:/var/log/caddy:ro
+    ports:
+      - 6060:6060 # Prometheus API endpoint
     networks:
       - caddy
     restart: unless-stopped
