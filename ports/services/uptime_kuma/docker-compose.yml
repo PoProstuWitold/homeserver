@@ -1,0 +1,17 @@
+services:
+  uptime_kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime_kuma
+    ports:
+      - 3002:3001
+    networks:
+      - caddy
+    volumes:
+      - /srv/server/services/uptime_kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+networks:
+  caddy:
+    name: caddy
+    external: true
