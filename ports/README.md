@@ -33,13 +33,14 @@ When you set up everything you need to forward these ports:
 |:----------------:	|:-----------------:	|:-----------------:	|:-----------------------:	|:------------:	|:-----------:	|
 |       HTTP       	|         80        	|         80        	| YOUR_SERVER_INTERNAL_IP 	|      TCP     	|    caddy    	|
 |       HTTPS      	|        443        	|        443        	| YOUR_SERVER_INTERNAL_IP 	|    TCP/UDP   	|    caddy    	|
-|     Minecraft    	|       25565       	|       25565       	| YOUR_SERVER_INTERNAL_IP 	|    TCP/UDP   	|      mc     	|
+|     Minecraft Java    	|       25565       	|       25565       	| YOUR_SERVER_INTERNAL_IP 	|    TCP/UDP   	|      mc     	|
+|     Minecraft Bedrock    	|       19132       	|       19132       	| YOUR_SERVER_INTERNAL_IP 	|    UDP   	|      mc     	|
 |   WireGuard VPN  	|       51820       	|       51820       	| YOUR_SERVER_INTERNAL_IP 	|      UDP     	|   wg_easy   	|
 |      NC Talk     	|        3478       	|        3478       	| YOUR_SERVER_INTERNAL_IP 	|    TCP/UDP   	| nc_talk_app 	|
 
 **Legend:**
 - ***caddy***: required for Caddy Reverse Proxy to work; essential for having working, accessible over Internet, server
-- ***mc***: required for Minecraft Java server (tcp) and query (udp)
+- ***mc***: required for Minecraft Java server (25565/tcp), query (25565/udp) and Bedrock server (19132/udp)
 - ***wg_easy***: required for WireGuard VPN to work; essential for accessing server over VPN tunnel
 - ***nc_talk_app***: required for NextCloud AIO Talk app to work 
 

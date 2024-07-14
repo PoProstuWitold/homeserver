@@ -30,7 +30,8 @@ services:
     container_name: mc
     image: itzg/minecraft-server
     ports:
-      - 25565:25565
+      - "25565:25565"
+      - "19132:19132/udp"
     tty: true
     stdin_open: true
     environment:
@@ -59,6 +60,9 @@ services:
       # RCON
       ENABLE_RCON: true
       RCON_PASSWORD: "changeme_rcon" # must be the same as in RCON web admin
+	  # Mods
+      MOD_PLATFORM: "MODRINTH"
+      MODRINTH_MODPACK: "modpack that icludes Geyser and Floodgate"
     restart: unless-stopped
     volumes:
       - /srv/server/services/minecraft/servers/FABRIC_1_21:/data
