@@ -58,12 +58,25 @@ Example config file for Caddy:
     }
 }
 
+(secure) {
+    forward_auth {args.0} authelia:9091 {
+        uri /api/verify?rd=https://auth.{env.BASE_URL}
+        copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+    }
+}
+
 *.{env.BASE_URL} {
     import web
 
     # Internet
+    @authelia host auth.{env.BASE_URL}
+    handle @authelia {
+        reverse_proxy authelia:9091
+    }
+
     @mealie host mealie.{env.BASE_URL}
     handle @mealie {
+        import secure *
         reverse_proxy mealie:9000
     }
 
@@ -79,26 +92,31 @@ Example config file for Caddy:
 
     @linkwarden host linkwarden.{env.BASE_URL}
     handle @linkwarden {
+        import secure *
         reverse_proxy linkwarden:3000
     }
 
     @uptime_kuma host uptime.{env.BASE_URL}
     handle @uptime_kuma {
+        import secure *
         reverse_proxy uptime_kuma:3001
     }
 
     @grafana host grafana.{env.BASE_URL}
     handle @grafana {
+        import secure *
         reverse_proxy grafana:3000
     }
 
     @jellyfin host jellyfin.{env.BASE_URL}
     handle @jellyfin {
+        import secure /web/#/dashboard
         reverse_proxy jellyfin:8096
     }
 
     @jellyseerr host jellyseerr.{env.BASE_URL}
     handle @jellyseerr {
+        import secure *
         reverse_proxy jellyseerr:5055
     }
 
