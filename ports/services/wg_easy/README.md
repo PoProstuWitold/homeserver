@@ -17,18 +17,13 @@ services:
   wg_easy:
     image: ghcr.io/wg-easy/wg-easy:latest
     container_name: wg_easy
-    labels:
-    # makes watchtower not update caddy but still monitor it
-      - "com.centurylinklabs.watchtower.monitor-only=true"
     ports:
       - "51820:51820/udp" # VPN
       - "51821:51821/tcp" # WebUI
     environment:
       - LANG=en
       - WG_HOST=YOUR_PUBLIC_STATIC_IP_OR_DDNS_ADDRESS
-      # Optional
-      - PASSWORD=changeme # will get deprecated in the future
-      # - PASSWORD_HASH=password_hashed_with_bcrypt # currently not supported
+      - PASSWORD_HASH=password_hashed_with_bcrypt
       - PORT=51821 # WebUI TCP port
       - WG_PORT=51820 # VPN UDP port
       - WG_CONFIG_PORT=51820 # HomeAssistant Plugin
