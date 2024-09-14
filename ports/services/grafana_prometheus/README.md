@@ -68,4 +68,5 @@ services:
     volumes:
       - /srv/server/services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - /srv/server/services/prometheus/data:/prometheus
+    restart: unless-stopped
 ```
