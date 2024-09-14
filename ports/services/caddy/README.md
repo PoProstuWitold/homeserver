@@ -59,7 +59,7 @@ Example config file for Caddy:
 }
 
 (secure) {
-    forward_auth {args.0} authelia:9091 {
+    forward_auth {args[0]} authelia:9091 {
         uri /api/verify?rd=https://auth.{env.BASE_URL}
         copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
     }
@@ -68,56 +68,63 @@ Example config file for Caddy:
 *.{env.BASE_URL} {
     import web
 
+    @geoip {
+        maxmind_geolocation {
+            db_path "/etc/caddy/GeoLite2-City.mmdb"
+            allow_countries PL
+        }
+    }
+
     # Internet
     @authelia host auth.{env.BASE_URL}
     handle @authelia {
-        reverse_proxy authelia:9091
+        reverse_proxy @geoip authelia:9091
     }
 
     @mealie host mealie.{env.BASE_URL}
     handle @mealie {
         import secure *
-        reverse_proxy mealie:9000
+        reverse_proxy @geoip mealie:9000
     }
 
     @dashdot host dashdot.{env.BASE_URL}
     handle @dashdot {
-        reverse_proxy dashdot:3001
+        reverse_proxy @geoip dashdot:3001
     }
 
     @nextcloud host nextcloud.{env.BASE_URL}
     handle @nextcloud {
-        reverse_proxy nextcloud-aio-apache:11000
+        reverse_proxy @geoip nextcloud-aio-apache:11000
     }
 
     @linkwarden host linkwarden.{env.BASE_URL}
     handle @linkwarden {
         import secure *
-        reverse_proxy linkwarden:3000
+        reverse_proxy @geoip linkwarden:3000
     }
 
     @uptime_kuma host uptime.{env.BASE_URL}
     handle @uptime_kuma {
         import secure *
-        reverse_proxy uptime_kuma:3001
+        reverse_proxy @geoip uptime_kuma:3001
     }
 
     @grafana host grafana.{env.BASE_URL}
     handle @grafana {
         import secure *
-        reverse_proxy grafana:3000
+        reverse_proxy @geoip grafana:3000
     }
 
     @jellyfin host jellyfin.{env.BASE_URL}
     handle @jellyfin {
         import secure /web/#/dashboard
-        reverse_proxy jellyfin:8096
+        reverse_proxy @geoip jellyfin:8096
     }
 
     @jellyseerr host jellyseerr.{env.BASE_URL}
     handle @jellyseerr {
         import secure *
-        reverse_proxy jellyseerr:5055
+        reverse_proxy @geoip jellyseerr:5055
     }
 
     # Metrics
@@ -136,14 +143,17 @@ Example config file for Caddy:
 {env.BASE_URL} {
     import web
 
-    @geoip_filter {
+    @geoip {
         maxmind_geolocation {
             db_path "/etc/caddy/GeoLite2-City.mmdb"
             allow_countries PL
         }
     }
 
-    reverse_proxy @geoip_filter homarr:7575
+    @homarr host {env.BASE_URL}
+    handle @homarr {
+        reverse_proxy @geoip homarr:7575
+    }
 }
 ```
 
@@ -169,6 +179,22 @@ echo "CROWDSEC_API_KEY=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 32)"
 ```
 
 After that paste it to ``CROWDSEC_API_KEY`` in **caddy** service and ``BOUNCER_KEY_CADDY`` in **crowdsec** service.
+
+3. Create custom whitelist
+
+You are very likely to get banned yourself while toying with your homelab so I recommend to create a custom whitelist:
+``/srv/server/services/crowdsec/config/parsers/s02-enrich/custom_whitelist.yaml``
+```bash
+name: homeserver/whitelists
+description: "Whitelist of known, friendly IP addresses"
+whitelist:
+  reason: "Known addresses"
+  ip:
+    - "your server ipv4"
+    - "another ipv4"
+```
+
+Restart container and after executing command ``docker exec -it crowdsec cscli parsers list`` you can see that another parser - ``homeserver/whitelists`` - has been added.
 
 ## GeoLite2
 
@@ -234,6 +260,7 @@ services:
     volumes:
       - /srv/server/services/crowdsec/db:/var/lib/crowdsec/data/
       - /srv/server/services/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - /srv/server/services/crowdsec/config:/etc/crowdsec/
       - /srv/server/services/caddy/logs:/var/log/caddy:ro
     ports:
       - 6060:6060 # Prometheus API endpoint

@@ -34,6 +34,7 @@ services:
     volumes:
       - /srv/server/services/crowdsec/db:/var/lib/crowdsec/data/
       - /srv/server/services/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - /srv/server/services/crowdsec/config:/etc/crowdsec/
       - /srv/server/services/caddy/logs:/var/log/caddy:ro
     ports:
       - 6060:6060 # Prometheus API endpoint
