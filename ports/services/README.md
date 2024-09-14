@@ -9,6 +9,9 @@ In every case you need to run:
 Only required if you don't have static public IP:
 - **[Cloudflare DDNS](cloudflare_ddns)** - small, feature-rich, and robust Cloudflare DDNS updater.
 
+Recommended:
+- **[Authelia](authelia)** - a single sign-on multi-factor portal for web apps.
+
 Personal preference:
 - **[Nextcloud All-In-One](nextcloud_aio)** - the official Nextcloud installation method.
 - **[Dashdot](dashdot)** - a modern server dashboard.

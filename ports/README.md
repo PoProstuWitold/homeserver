@@ -80,6 +80,9 @@ In every case you need to run:
 Only required if you don't have static public IP:
 - **[Cloudflare DDNS](services/cloudflare_ddns)** - small, feature-rich, and robust Cloudflare DDNS updater.
 
+Recommended:
+- **[Authelia](services/authelia)** - a single sign-on multi-factor portal for web apps.
+
 Personal preference:
 - **[Nextcloud All-In-One](services/nextcloud_aio)** - the official Nextcloud installation method.
 - **[Dashdot](services/dashdot)** - a modern server dashboard.
