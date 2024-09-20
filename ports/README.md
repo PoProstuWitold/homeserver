@@ -90,6 +90,7 @@ Personal preference:
 - **[Homarr](services/homarr)** - customizable browser's home page for your homeserver.
 - **[Linkwarden](services/linkwarden)** - collaborative bookmark manager to collect, organize, and preserve webpages and articles. 
 - **[Mealie](services/mealie)** - a recipe manager for the modern household.
+- **[Pastefy](services/pastefy)** - an open source self-hostable Pastebin.
 - **[Jellyfin & Jellyseerr](services/jellyfin_jellyseerr)** - a free software media system that puts you in control of managing and streaming your media with app for managing requests for your media library.
 - **[qBittorrent & Collections](services/qbittorrent_collections)** - download client and collection managers for your media server.
 - **[Minecraft](services/minecraft)** - Minecraft server with your own IP.

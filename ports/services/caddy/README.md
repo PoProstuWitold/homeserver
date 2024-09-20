@@ -127,6 +127,12 @@ Example config file for Caddy:
         reverse_proxy @geoip jellyseerr:5055
     }
 
+    @pastefy host pastefy.{env.BASE_URL}
+    handle @pastefy {
+		import secure *
+        reverse_proxy @geoip pastefy:80
+    }
+
     # Metrics
     @metrics host metrics.{env.BASE_URL}
     handle @metrics {
