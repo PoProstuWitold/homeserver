@@ -94,9 +94,7 @@ storage:
 notifier:
 # I decided to use Gmail. You can choose any SMTP provider
   smtp:
-    host: smtp.gmail.com
-    port: 465
-    #address: 'smtp://smtp.gmail.com:465'
+    address: 'submissions://smtp.gmail.com:465'
     username: your-email@gmail.com
     sender: 'Authelia <authelia@yourdomain.tld>'
 ```
