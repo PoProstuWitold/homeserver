@@ -82,6 +82,7 @@ Only required if you don't have static public IP:
 
 Recommended:
 - **[Authelia](services/authelia)** - a single sign-on multi-factor portal for web apps.
+- **[Filebrowser](services/filebrowser)** - a web file browser.
 
 Personal preference:
 - **[Nextcloud All-In-One](services/nextcloud_aio)** - the official Nextcloud installation method.
