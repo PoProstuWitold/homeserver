@@ -11,9 +11,9 @@ After following this tutorial you will have:
 - Couple of web or standalone dockerized services
 - Minecraft server with ***mc.your-domain.tld***
 
-<!-- In the end your server may look like this (diagram made by me in [draw.io](https://draw.io/)): -->
+In the end your server may look like this (diagram made by me in [draw.io](https://draw.io/)):
 
-<!-- ![Diagram for homeserver with ports](assets/diagram_ports.png) -->
+![Diagram for homeserver with ports](assets/diagram_ports.png)
 
 ## 1. Public IP and Port Forwarding
 
