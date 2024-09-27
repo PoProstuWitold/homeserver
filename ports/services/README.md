@@ -12,6 +12,7 @@ Only required if you don't have static public IP:
 Recommended:
 - **[Authelia](authelia)** - a single sign-on multi-factor portal for web apps.
 - **[Filebrowser](filebrowser)** - a web file browser.
+- **[Backrest](backrest)** - a web UI and orchestrator for restic.
 
 Personal preference:
 - **[Nextcloud All-In-One](nextcloud_aio)** - the official Nextcloud installation method.
