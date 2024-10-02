@@ -11,7 +11,7 @@ services:
     security_opt:
       - no-new-privileges:true
     environment:
-      - CF_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
+      - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
       - IP6_PROVIDER=none
       - DOMAINS=your-domain.tld,*.your-domain.tld,mc.your-domain.tld
       - CACHE_EXPIRATION=3h
