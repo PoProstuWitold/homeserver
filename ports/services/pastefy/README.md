@@ -26,6 +26,7 @@ services:
    pastefy_db:
      container_name: pastefy_db
      image: mariadb:10.11
+     restart: unless-stopped
      networks:
        - pastefy
      volumes:
@@ -40,6 +41,7 @@ services:
      depends_on:
        - pastefy_db
      image: interaapps/pastefy:latest
+     restart: unless-stopped
      ports:
        - "9999:80"
      networks:
