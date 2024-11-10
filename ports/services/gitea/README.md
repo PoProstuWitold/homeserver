@@ -70,6 +70,22 @@ services:
     networks:
       - gitea
 
+  gitea_runner:
+    image: gitea/act_runner:latest
+    container_name: gitea_runner
+    environment:
+      CONFIG_FILE: /config.yaml
+      GITEA_INSTANCE_URL: "https://gitea.yourdomain.tld"
+      # grab from https://gitea.yourdomain.tld/admin/actions/runners -> Create new runner -> Copy registration token
+      GITEA_RUNNER_REGISTRATION_TOKEN: "YOUR_REGISTRATION_TOKEN"
+      GITEA_RUNNER_NAME: "YOUR_RUNNER_NAME"
+    volumes:
+      - /srv/server/services/gitea/runner/config.yaml:/config.yaml
+      - /srv/server/services/gitea/runner/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - gitea
+
 networks:
   caddy:
     name: caddy
