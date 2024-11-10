@@ -10,7 +10,8 @@ After you launch your ``docker-compose.yml`` run these commands in main ``gitea`
 You also have to modify ``config/app.ini`` file to looks similar to this:
 ```ini
 [server]
-APP_DATA_PATH = /var/lib/gitea                                                                                          PROTOCOL PROTOCOL = http
+APP_DATA_PATH = /var/lib/gitea                                                                                          
+PROTOCOL = http
 SSH_DOMAIN = gitea.yourdomain.tld
 ROOT_URL = https://gitea.yourdomain.tld
 DISABLE_SSH = false
