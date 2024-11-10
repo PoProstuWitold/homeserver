@@ -88,6 +88,7 @@ Recommended:
 Personal preference:
 - **[Nextcloud All-In-One](services/nextcloud_aio)** - the official Nextcloud installation method.
 - **[Dashdot](services/dashdot)** - a modern server dashboard.
+- **[Gitea](services/gitea)** - a selfhosted Git with a cup of tea!
 - **[Homarr](services/homarr)** - customizable browser's home page for your homeserver.
 - **[Linkwarden](services/linkwarden)** - collaborative bookmark manager to collect, organize, and preserve webpages and articles. 
 - **[Mealie](services/mealie)** - a recipe manager for the modern household.

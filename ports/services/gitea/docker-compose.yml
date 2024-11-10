@@ -1,0 +1,48 @@
+services:
+  gitea:
+    container_name: gitea
+    image: gitea/gitea:1.22.3-rootless
+    environment:
+    # DB
+      - GITEA__database__DB_TYPE=postgres
+      - GITEA__database__HOST=gitea_db:5432
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=gitea
+      - GITEA__database__PASSWD=CHANGE_ME
+    # OTHER
+      - APP_NAME="Gitea - Git with a cup of tea" 
+      - USER=YOUR_USERNAME # of UID:GID (1000:1000)
+    restart: always
+    volumes:
+      - /srv/server/services/gitea/data:/var/lib/gitea
+      - /srv/server/services/gitea/config:/etc/gitea
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3004:3000"
+      - "2222:2222"
+    depends_on:
+      - gitea_db
+    networks:
+      - gitea
+      - caddy
+
+  gitea_db:
+    container_name: gitea_db
+    image: postgres:14
+    restart: always
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=CHANGE_ME
+      - POSTGRES_DB=gitea
+    volumes:
+      - /srv/server/services/gitea/db:/var/lib/postgresql/data
+    networks:
+      - gitea
+
+networks:
+  caddy:
+    name: caddy
+    external: true
+  gitea:
+    name: gitea

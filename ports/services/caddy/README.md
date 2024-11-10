@@ -133,6 +133,12 @@ Example config file for Caddy:
         reverse_proxy @geoip pastefy:80
     }
 
+	@gitea host gitea.{env.BASE_URL}
+    handle @gitea {
+		import secure *
+        reverse_proxy @geoip gitea:3000
+    }
+
     # Metrics
     @metrics host metrics.{env.BASE_URL}
     handle @metrics {
