@@ -1,4 +1,7 @@
 # Homeserver
+
+> Link to article [here](https://witoldzawada.dev/blog/introduction-to-selfhosting)
+
 In this guide, you’ll find easy-to-follow steps to set up your own server at home using ***Linux***, ***Docker***, and either ***[Port Forwarding](ports)*** or ***[Cloudflare Tunnels](tunnels)***. 
 
 Please note that some parts of this guide are based on my personal preferences (e.g. the choice of Linux distros), and your setup for certain things may slightly differ. Let’s begin, shall we?
