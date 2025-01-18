@@ -39,7 +39,6 @@ Example config file for Caddy:
     servers {
         trusted_proxies cloudflare
         client_ip_headers CF-Connecting-IP
-        metrics
     }
 }
 
@@ -129,13 +128,12 @@ Example config file for Caddy:
 
     @pastefy host pastefy.{env.BASE_URL}
     handle @pastefy {
-		import secure *
         reverse_proxy @geoip pastefy:80
     }
 
-	@gitea host gitea.{env.BASE_URL}
+    @gitea host gitea.{env.BASE_URL}
     handle @gitea {
-		import secure *
+        import secure /user/login
         reverse_proxy @geoip gitea:3000
     }
 
