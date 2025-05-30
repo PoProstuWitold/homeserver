@@ -1,0 +1,18 @@
+services:
+  sftpgo:
+    image: drakkan/sftpgo:latest
+    container_name: sftpgo
+    ports:
+      - 2022:2022
+      - 8080:8080
+    networks:
+      - caddy
+    volumes:
+      - /srv/server/services/sftpgo/data:/var/lib/sftpgo
+      - /srv/server/services/sftpgo/config:/etc/sftpgo
+    restart: unless-stopped
+
+networks:
+  caddy:
+    name: caddy
+    external: true
