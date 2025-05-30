@@ -13,6 +13,7 @@ Recommended:
 - **[Authelia](authelia)** - a single sign-on multi-factor portal for web apps.
 - **[Filebrowser](filebrowser)** - a web file browser.
 - **[Backrest](backrest)** - a web UI and orchestrator for restic.
+- **[Diun](diun)** - get notified about Docker images updates.
 
 Personal preference:
 - **[Nextcloud All-In-One](nextcloud_aio)** - the official Nextcloud installation method.
@@ -24,6 +25,7 @@ Personal preference:
 - **[Pastefy](pastefy)** - an open source self-hostable Pastebin.
 - **[Jellyfin & Jellyseerr](jellyfin_jellyseerr)** - a free software media system that puts you in control of managing and streaming your media with app for managing requests for your media library.
 - **[qBittorrent & Collections](qbittorrent_collections)** - download client and collection managers for your media server.
+- **[SFTPGo](sftpgo)** - SFTP server with HTTP/S Web UI and optional FTP/S and WebDAV.
 - **[Minecraft](minecraft)** - Minecraft server with your own IP.
 - **[Uptime Kuma](uptime_kuma)** - a fancy selfhosted monitoring tool.
 - **[Grafana & Prometheus](grafana_prometheus)** - an open and composable observability and data visualization platform with Prometheus data source.
