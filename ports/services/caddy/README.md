@@ -16,7 +16,7 @@ Additionaly you can do same with network named ``nextcloud-aio`` if you want to 
 Example config file for Caddy:
 
 ``Caddyfile``
-```python
+```ini
 {
     debug
     log default {
@@ -72,6 +72,20 @@ Example config file for Caddy:
             db_path "/etc/caddy/GeoLite2-City.mmdb"
             allow_countries PL
         }
+    }
+
+    # My apps
+    # DoggoPaste
+    @doggopaste host doggopaste.{env.BASE_URL}
+    handle @doggopaste {
+        import secure *
+        reverse_proxy @geoip doggopaste:3002
+    }
+    
+    # Pizzeria
+    @pizzeria host pizzeria.{env.BASE_URL}
+    handle @pizzeria {
+        reverse_proxy @geoip pizzeria:3005
     }
 
     # Internet
@@ -135,6 +149,11 @@ Example config file for Caddy:
     handle @gitea {
         import secure /user/login
         reverse_proxy @geoip gitea:3000
+    }
+
+    @sftpgo host sftp.{env.BASE_URL}
+    handle @sftpgo {
+        reverse_proxy @geoip sftpgo:8080
     }
 
     # Metrics
