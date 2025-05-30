@@ -46,7 +46,7 @@ When you set up everything you need to forward these ports:
 
 ## 2. Install Your Preferred Linux Distribution
 
-For the distribution, I chose [AlmaLinux 9.5 (Teal Serval)](https://almalinux.org/) because it’s open source, community-owned and binary-compatible with RHEL. It also focuses on long-term stability and security, which is especially important for me because this time I want to essentially "set and forget" my server and have minimal personal maintenance.
+For the distribution, I chose [AlmaLinux 9.6 (Sage Margay)](https://almalinux.org/) because it’s open source, community-owned and binary-compatible with RHEL. It also focuses on long-term stability and security, which is especially important for me because this time I want to essentially "set and forget" my server and have minimal personal maintenance.
 
 It has great documentation on its own and thanks to being binary compatible with RHEL you can also use docs designed for RHEL, Rocky Linux, CentOS and many more RHEL clones.
 
