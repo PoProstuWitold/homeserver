@@ -16,11 +16,7 @@ notif:
   discord:
     webhookURL: YOUR_DISCORD_WEBHOOK_URL
     mentions:
-      - "@here"
       - "@everyone"
-      - "<@124>"
-      - "<@125>"
-      - "<@&200>"
     renderFields: true
     timeout: 10s
     templateBody: |
