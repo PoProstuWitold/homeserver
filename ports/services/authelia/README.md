@@ -143,7 +143,7 @@ services:
       - authelia
       - caddy
   database:
-    image: postgres:15
+    image: postgres:17
     container_name: authelia_db
     restart: unless-stopped
     volumes:

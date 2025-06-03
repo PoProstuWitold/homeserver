@@ -19,7 +19,7 @@ services:
       - /srv/server/services/linkwarden/data:/data/data
     restart: unless-stopped
   linkwarden_db:
-    image: postgres:16-alpine
+    image: postgres:17
     container_name: linkwarden_db
     environment:
       POSTGRES_DB: "linkwarden_db"
