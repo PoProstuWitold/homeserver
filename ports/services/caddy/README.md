@@ -88,6 +88,13 @@ Example config file for Caddy:
         reverse_proxy @geoip pizzeria:3005
     }
 
+    # Nuntius Feed
+    @nuntius_feed host feed.{env.BASE_URL}
+    handle @nuntius_feed {
+        import secure *
+        reverse_proxy @geoip nuntius_feed:3006
+    }
+
     # Internet
     @authelia host auth.{env.BASE_URL}
     handle @authelia {
@@ -154,6 +161,11 @@ Example config file for Caddy:
     @sftpgo host sftp.{env.BASE_URL}
     handle @sftpgo {
         reverse_proxy @geoip sftpgo:8080
+    }
+
+    @omni_tools host tools.{env.BASE_URL}
+    handle @omni_tools {
+        reverse_proxy @geoip omni_tools:80
     }
 
     # Metrics

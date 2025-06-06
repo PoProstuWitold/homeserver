@@ -1,0 +1,14 @@
+services:
+  omni_tools:
+    image: iib0011/omni-tools:latest
+    container_name: omni_tools
+    ports:
+      - "8082:80"
+    networks:
+      - caddy
+    restart: unless-stopped
+
+networks:
+  caddy:
+    name: caddy
+    external: true

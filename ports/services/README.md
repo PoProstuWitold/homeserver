@@ -26,6 +26,7 @@ Personal preference:
 - **[Jellyfin & Jellyseerr](jellyfin_jellyseerr)** - a free software media system that puts you in control of managing and streaming your media with app for managing requests for your media library.
 - **[qBittorrent & Collections](qbittorrent_collections)** - download client and collection managers for your media server.
 - **[SFTPGo](sftpgo)** - SFTP server with HTTP/S Web UI and optional FTP/S and WebDAV.
+- **[Omni Tools](omni_tools)** - the ultimate toolkit for getting things done quickly!
 - **[Minecraft](minecraft)** - Minecraft server with your own IP.
 - **[Uptime Kuma](uptime_kuma)** - a fancy selfhosted monitoring tool.
 - **[Grafana & Prometheus](grafana_prometheus)** - an open and composable observability and data visualization platform with Prometheus data source.
