@@ -43,7 +43,7 @@ services:
       # SERVER
       TYPE: "FABRIC"
       EULA: true
-      VERSION: "1.21"
+      VERSION: "1.21.11"
       MOTD: "Motto of the day"
       DIFFICULTY: "normal"
       # ICON: "https://your-domain.tld/imgs/mc_icon.png"
