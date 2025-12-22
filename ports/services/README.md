@@ -30,4 +30,3 @@ Personal preference:
 - **[Minecraft](minecraft)** - Minecraft server with your own IP.
 - **[Uptime Kuma](uptime_kuma)** - a fancy selfhosted monitoring tool.
 - **[Grafana & Prometheus](grafana_prometheus)** - an open and composable observability and data visualization platform with Prometheus data source.
-- **[Watchtower](watchtower)** - update your Docker containers automatically.
