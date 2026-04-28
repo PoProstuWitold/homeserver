@@ -31,7 +31,7 @@ OFFLINE_MODE = true
 services:
   gitea:
     container_name: gitea
-    image: gitea/gitea:1.23-rootless
+    image: gitea/gitea:1-rootless
     environment:
     # DB
       - GITEA__database__DB_TYPE=postgres
