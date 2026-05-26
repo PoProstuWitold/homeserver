@@ -100,4 +100,4 @@ Personal preference:
 - **[Omni Tools](services/omni_tools)** - the ultimate toolkit for getting things done quickly!
 - **[Minecraft](services/minecraft)** - Minecraft server with your own IP.
 - **[Uptime Kuma](services/uptime_kuma)** - a fancy selfhosted monitoring tool.
-- **[Grafana & Prometheus](services/grafana_prometheus)** - an open and composable observability and data visualization platform with Prometheus data source.
+- **[Grafana, Prometheus & Loki](services/grafana_prometheus)** - a complete observability stack for metrics, logs and dashboards, including Prometheus, Loki, Alloy, Node Exporter, cAdvisor and smartctl_exporter.
