@@ -13,7 +13,6 @@ Optional:
 - **[Radarr](https://github.com/linuxserver/docker-radarr)** - movie collection manager.
 - **[Sonarr](https://github.com/linuxserver/docker-sonarr)** - tv shows/anime collection manager.
 - **[Lidarr](https://github.com/linuxserver/docker-lidarr)** - music collection manager.
-- **[Readarr](https://github.com/linuxserver/docker-readarr)** - ebook and audiobook collection manager.
 
 ``docker-compose.yml``
 ```yaml
@@ -85,20 +84,6 @@ services:
       - /srv/server/media/downloads:/downloads
     ports:
       - 8686:8686
-    restart: unless-stopped
-  readarr: # ebook and audiobook collection manager
-    image: lscr.io/linuxserver/readarr:develop
-    container_name: readarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Warsaw
-    volumes:
-      - /srv/server/services/readarr/config:/config
-      - /srv/server/media:/data
-      - /srv/server/media/downloads:/downloads
-    ports:
-      - 8787:8787
     restart: unless-stopped
   flaresolverr: # Proxy server to bypass Cloudflare protection
     image: ghcr.io/flaresolverr/flaresolverr:latest

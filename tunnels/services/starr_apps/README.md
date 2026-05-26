@@ -8,6 +8,5 @@ Installing *Prowlarr* isn't essential but will make further setup and configurat
 - ***[Radarr](radarr)*** - for movies
 - ***[Sonarr](sonarr)*** - for TV shows or anime
 - ***[Lidarr](lidarr)*** - for music
-- ***[Readarr](readarr)*** - for ebooks
 
 *Radarr* and *Sonarr* have great integration with *Jellyfin* and *Jellyseerr*. I recommend setting them first.
