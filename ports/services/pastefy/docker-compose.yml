@@ -32,10 +32,10 @@ services:
       DATABASE_PASSWORD: pastefy
       DATABASE_HOST: pastefy_db
       DATABASE_PORT: 3306
-      SERVER_NAME: "https://yourdomain.tld"
+      SERVER_NAME: "https://your-domain.tld"
       # OPTIONAL
       PASTEFY_INFO_CUSTOM_NAME: CustomTitle
-      PASTEFY_INFO_CUSTOM_FOOTER: https://yourdomain.tld
+      PASTEFY_INFO_CUSTOM_FOOTER: https://your-domain.tld
       # There is INTERAAPPS, GOOGLE, GITHUB, DISCORD, TWITCH; you can use multiple
       OAUTH2_GITHUB_CLIENT_ID:  
       OAUTH2_GITHUB_CLIENT_SECRET: 

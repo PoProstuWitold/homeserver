@@ -58,21 +58,21 @@ authentication_backend:
 
 # Second Factor https://www.authelia.com/configuration/second-factor/introduction/
 totp:
-  issuer: yourdomain.tld # CHANGE ME
+  issuer: your-domain.tld # CHANGE ME
 
 # Security https://www.authelia.com/configuration/security/access-control/
 access_control:
   default_policy: deny
   rules:
-  - domain: '*.yourdomain.tld' # CHANGE ME
+  - domain: '*.your-domain.tld' # CHANGE ME
     policy: 'two_factor'
 
 # Session https://www.authelia.com/configuration/session/introduction/
 # Set also AUTHELIA_SESSION_SECRET_FILE
 session:
   cookies:
-    - domain: 'yourdomain.tld' # CHANGE ME
-      authelia_url: 'https://auth.yourdomain.tld'
+    - domain: 'your-domain.tld' # CHANGE ME
+      authelia_url: 'https://auth.your-domain.tld'
 
   # https://www.authelia.com/configuration/session/redis/
   # Set also AUTHELIA_SESSION_REDIS_PASSWORD_FILE if appropriate
@@ -96,7 +96,7 @@ notifier:
   smtp:
     address: 'submissions://smtp.gmail.com:465'
     username: your-email@gmail.com
-    sender: 'Authelia <authelia@yourdomain.tld>'
+    sender: 'Authelia <authelia@your-domain.tld>'
 ```
 
 ## 3. Authelia user database

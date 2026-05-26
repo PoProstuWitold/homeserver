@@ -45,8 +45,8 @@ services:
     container_name: gitea_runner
     environment:
       CONFIG_FILE: /config.yaml
-      GITEA_INSTANCE_URL: "https://gitea.yourdomain.tld"
-      # grab from https://gitea.yourdomain.tld/admin/actions/runners -> Create new runner -> Copy registration token
+      GITEA_INSTANCE_URL: "https://gitea.your-domain.tld"
+      # grab from https://gitea.your-domain.tld/admin/actions/runners -> Create new runner -> Copy registration token
       GITEA_RUNNER_REGISTRATION_TOKEN: "YOUR_REGISTRATION_TOKEN"
       GITEA_RUNNER_NAME: "YOUR_RUNNER_NAME"
     volumes:

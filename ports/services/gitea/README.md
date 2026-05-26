@@ -12,8 +12,8 @@ You also have to modify ``config/app.ini`` file to looks similar to this:
 [server]
 APP_DATA_PATH = /var/lib/gitea                                                                                          
 PROTOCOL = http
-SSH_DOMAIN = gitea.yourdomain.tld
-ROOT_URL = https://gitea.yourdomain.tld
+SSH_DOMAIN = gitea.your-domain.tld
+ROOT_URL = https://gitea.your-domain.tld
 DISABLE_SSH = false
 ; In rootless gitea container only internal ssh server is supported
 START_SSH_SERVER = true
@@ -75,8 +75,8 @@ services:
     container_name: gitea_runner
     environment:
       CONFIG_FILE: /config.yaml
-      GITEA_INSTANCE_URL: "https://gitea.yourdomain.tld"
-      # grab from https://gitea.yourdomain.tld/admin/actions/runners -> Create new runner -> Copy registration token
+      GITEA_INSTANCE_URL: "https://gitea.your-domain.tld"
+      # grab from https://gitea.your-domain.tld/admin/actions/runners -> Create new runner -> Copy registration token
       GITEA_RUNNER_REGISTRATION_TOKEN: "YOUR_REGISTRATION_TOKEN"
       GITEA_RUNNER_NAME: "YOUR_RUNNER_NAME"
     volumes:
