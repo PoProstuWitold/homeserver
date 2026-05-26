@@ -18,183 +18,200 @@ Example config file for Caddy:
 ``Caddyfile``
 ```ini
 {
-    debug
-    log default {
-        format json
-        output file /var/log/caddy/access.log {
-            roll_size 100MiB
-            roll_keep 10
-            roll_keep_for 100d
+        debug
+
+        log default {
+                format json
+                output file /var/log/caddy/caddy.log {
+                        mode 0644
+                        roll_size 100MiB
+                        roll_keep 10
+                        roll_keep_for 100d
+                }
+                exclude http.log.access
         }
-    }
 
-    # crowdsec
-    crowdsec {
-        api_url http://crowdsec:8080
-        api_key {env.CROWDSEC_API_KEY}
-    }
-    order crowdsec first
+        log access {
+                format json
+                output file /var/log/caddy/caddy-access.log {
+                        mode 0644
+                        roll_size 100MiB
+                        roll_keep 10
+                        roll_keep_for 14d
+                }
+                include http.log.access
+        }
 
-    # caddy-cloudflare-ip
-    servers {
-        trusted_proxies cloudflare
-        client_ip_headers CF-Connecting-IP
-    }
+        # crowdsec
+        crowdsec {
+                api_url http://crowdsec:8080
+                api_key {env.CROWDSEC_API_KEY}
+        }
+
+        order crowdsec first
+
+        # caddy-cloudflare-ip
+        servers {
+                trusted_proxies cloudflare
+                client_ip_headers CF-Connecting-IP
+        }
 }
 
 (web) {
-    crowdsec
-    encode zstd gzip
+        crowdsec
+        encode zstd gzip
 
-    handle_errors {
-        rewrite * /{http.error.status_code}
-        reverse_proxy https://http.cat
-    }
+        log
 
-    # caddy-cloudflare-dns
-    tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-    }
+        handle_errors {
+                rewrite * /{http.error.status_code}
+                reverse_proxy https://http.cat
+        }
+
+        tls {
+                dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
 }
 
 (secure) {
-    forward_auth {args[0]} authelia:9091 {
-        uri /api/verify?rd=https://auth.{env.BASE_URL}
-        copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
-    }
+        forward_auth {args[0]} authelia:9091 {
+                uri /api/verify?rd=https://auth.{env.BASE_URL}
+                copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+        }
 }
 
 *.{env.BASE_URL} {
-    import web
+        import web
 
-    @geoip {
-        maxmind_geolocation {
-            db_path "/etc/caddy/GeoLite2-City.mmdb"
-            allow_countries PL
+        @geoip {
+                maxmind_geolocation {
+                        db_path "/etc/caddy/GeoLite2-City.mmdb"
+                        allow_countries PL
+                }
         }
-    }
 
-    # My apps
-    # DoggoPaste
-    @doggopaste host doggopaste.{env.BASE_URL}
-    handle @doggopaste {
-        import secure *
-        reverse_proxy @geoip doggopaste:3002
-    }
-    
-    # Pizzeria
-    @pizzeria host pizzeria.{env.BASE_URL}
-    handle @pizzeria {
-        reverse_proxy @geoip pizzeria:3005
-    }
+        # My apps
 
-    # Nuntius Feed
-    @nuntius_feed host feed.{env.BASE_URL}
-    handle @nuntius_feed {
-        import secure *
-        reverse_proxy @geoip nuntius_feed:3006
-    }
+        # DoggoPaste
+        @doggopaste host doggopaste.{env.BASE_URL}
+        handle @doggopaste {
+                import secure *
+                reverse_proxy @geoip doggopaste:3002
+        }
 
-    # Internet
-    @authelia host auth.{env.BASE_URL}
-    handle @authelia {
-        reverse_proxy @geoip authelia:9091
-    }
+        # Pizzeria
+        @pizzeria host pizzeria.{env.BASE_URL}
+        handle @pizzeria {
+                reverse_proxy pizzeria:3005
+        }
 
-    @mealie host mealie.{env.BASE_URL}
-    handle @mealie {
-        import secure *
-        reverse_proxy @geoip mealie:9000
-    }
+        # Nuntius Feed
+        @nuntius_feed host feed.{env.BASE_URL}
+        handle @nuntius_feed {
+                import secure *
+                reverse_proxy @geoip nuntius_feed:3006
+        }
 
-    @dashdot host dashdot.{env.BASE_URL}
-    handle @dashdot {
-        reverse_proxy @geoip dashdot:3001
-    }
+        # Internet
+        @authelia host auth.{env.BASE_URL}
+        handle @authelia {
+                reverse_proxy @geoip authelia:9091
+        }
 
-    @nextcloud host nextcloud.{env.BASE_URL}
-    handle @nextcloud {
-        reverse_proxy @geoip nextcloud-aio-apache:11000
-    }
+        @mealie host mealie.{env.BASE_URL}
+        handle @mealie {
+                import secure *
+                reverse_proxy @geoip mealie:9000
+        }
 
-    @linkwarden host linkwarden.{env.BASE_URL}
-    handle @linkwarden {
-        import secure *
-        reverse_proxy @geoip linkwarden:3000
-    }
+        @dashdot host dashdot.{env.BASE_URL}
+        handle @dashdot {
+                reverse_proxy @geoip dashdot:3001
+        }
 
-    @uptime_kuma host uptime.{env.BASE_URL}
-    handle @uptime_kuma {
-        import secure *
-        reverse_proxy @geoip uptime_kuma:3001
-    }
+        @nextcloud host nextcloud.{env.BASE_URL}
+        handle @nextcloud {
+                reverse_proxy @geoip nextcloud-aio-apache:11000
+        }
 
-    @grafana host grafana.{env.BASE_URL}
-    handle @grafana {
-        import secure *
-        reverse_proxy @geoip grafana:3000
-    }
+        @linkwarden host linkwarden.{env.BASE_URL}
+        handle @linkwarden {
+                import secure *
+                reverse_proxy @geoip linkwarden:3000
+        }
 
-    @jellyfin host jellyfin.{env.BASE_URL}
-    handle @jellyfin {
-        import secure /web/#/dashboard
-        reverse_proxy @geoip jellyfin:8096
-    }
+        @uptime_kuma host uptime.{env.BASE_URL}
+        handle @uptime_kuma {
+                import secure *
+                reverse_proxy @geoip uptime_kuma:3001
+        }
 
-    @jellyseerr host jellyseerr.{env.BASE_URL}
-    handle @jellyseerr {
-        import secure *
-        reverse_proxy @geoip jellyseerr:5055
-    }
+        @grafana host grafana.{env.BASE_URL}
+        handle @grafana {
+                import secure *
+                reverse_proxy @geoip grafana:3000
+        }
 
-    @pastefy host pastefy.{env.BASE_URL}
-    handle @pastefy {
-        reverse_proxy @geoip pastefy:80
-    }
+        @jellyfin host jellyfin.{env.BASE_URL}
+        handle @jellyfin {
+                import secure /web/#/dashboard
+                reverse_proxy @geoip jellyfin:8096
+        }
 
-    @gitea host gitea.{env.BASE_URL}
-    handle @gitea {
-        import secure /user/login
-        reverse_proxy @geoip gitea:3000
-    }
+        @jellyseerr host jellyseerr.{env.BASE_URL}
+        handle @jellyseerr {
+                import secure *
+                reverse_proxy @geoip jellyseerr:5055
+        }
 
-    @sftpgo host sftp.{env.BASE_URL}
-    handle @sftpgo {
-        reverse_proxy @geoip sftpgo:8080
-    }
+        @pastefy host pastefy.{env.BASE_URL}
+        handle @pastefy {
+                reverse_proxy @geoip pastefy:80
+        }
 
-    @omni_tools host tools.{env.BASE_URL}
-    handle @omni_tools {
-        reverse_proxy @geoip omni_tools:80
-    }
+        @gitea host gitea.{env.BASE_URL}
+        handle @gitea {
+                import secure /user/login
+                reverse_proxy @geoip gitea:3000
+        }
 
-    # Metrics
-    @metrics host metrics.{env.BASE_URL}
-    handle @metrics {
-        metrics
-    }
+        @sftpgo host sftp.{env.BASE_URL}
+        handle @sftpgo {
+                reverse_proxy @geoip sftpgo:8080
+        }
 
-    # Not Found
-    @not_found host *.{env.BASE_URL}
-    handle @not_found {
-        respond "Not Found" 404
-    }
+        @omni_tools host tools.{env.BASE_URL}
+        handle @omni_tools {
+                reverse_proxy @geoip omni_tools:80
+        }
+
+        # Metrics
+        @metrics host metrics.{env.BASE_URL}
+        handle @metrics {
+                metrics
+        }
+
+        # Not Found
+        @not_found host *.{env.BASE_URL}
+        handle @not_found {
+                respond "Not Found" 404
+        }
 }
 
 {env.BASE_URL} {
-    import web
+        import web
 
-    @geoip {
-        maxmind_geolocation {
-            db_path "/etc/caddy/GeoLite2-City.mmdb"
-            allow_countries PL
+        @geoip {
+                maxmind_geolocation {
+                        db_path "/etc/caddy/GeoLite2-City.mmdb"
+                        allow_countries PL
+                }
         }
-    }
 
-    @homarr host {env.BASE_URL}
-    handle @homarr {
-        reverse_proxy @geoip homarr:7575
-    }
+        @homarr host {env.BASE_URL}
+        handle @homarr {
+                reverse_proxy @geoip homarr:7575
+        }
 }
 ```
 
