@@ -20,6 +20,7 @@ Personal preference:
 - **[Dashdot](dashdot)** - a modern server dashboard.
 - **[Gitea](gitea)** - a selfhosted Git with a cup of tea!
 - **[Homarr](homarr)** - customizable browser's home page for your homeserver.
+- **[Home Assistant](home_assistant)** - open source home automation that puts local control and privacy first. 
 - **[Linkwarden](linkwarden)** - collaborative bookmark manager to collect, organize, and preserve webpages and articles.
 - **[Mealie](mealie)** - a recipe manager for the modern household.
 - **[Pastefy](pastefy)** - an open source self-hostable Pastebin.

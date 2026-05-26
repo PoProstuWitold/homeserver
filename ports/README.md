@@ -91,6 +91,7 @@ Personal preference:
 - **[Dashdot](services/dashdot)** - a modern server dashboard.
 - **[Gitea](services/gitea)** - a selfhosted Git with a cup of tea!
 - **[Homarr](services/homarr)** - customizable browser's home page for your homeserver.
+- **[Home Assistant](services/home_assistant)** - open source home automation that puts local control and privacy first. 
 - **[Linkwarden](services/linkwarden)** - collaborative bookmark manager to collect, organize, and preserve webpages and articles. 
 - **[Mealie](services/mealie)** - a recipe manager for the modern household.
 - **[Pastefy](services/pastefy)** - an open source self-hostable Pastebin.
