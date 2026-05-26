@@ -9,7 +9,8 @@ After following this tutorial you will have:
 - Secure access to your selfhosted web services using [Caddy Reverse Proxy with Cloudflare DNS addon](https://github.com/SlothCroissant/caddy-cloudflaredns)
 - Remote access to your server from anywhere using [WireGuard VPN with WebUI](https://github.com/wg-easy/wg-easy)
 - Couple of web or standalone dockerized services
-- Minecraft server with ***mc.your-domain.tld***
+- General-purpose game server management panel, including a Minecraft server available at ***mc.your-domain.tld***
+- Monitoring and observability stack for tracking server health, resource usage, logs, metrics and service status
 
 In the end your server may look like this (diagram made by me in [draw.io](https://draw.io/)):
 
@@ -100,5 +101,6 @@ Personal preference:
 - **[SFTPGo](services/sftpgo)** - SFTP server with HTTP/S Web UI and optional FTP/S and WebDAV.
 - **[Omni Tools](services/omni_tools)** - the ultimate toolkit for getting things done quickly!
 - **[Minecraft](services/minecraft)** - Minecraft server with your own IP.
+- **[PufferPanel](services/pufferpanel)** - a general-purpose game server management panel with Web UI, file manager, SFTP access, console access, backups and server templates.
 - **[Uptime Kuma](services/uptime_kuma)** - a fancy selfhosted monitoring tool.
 - **[Grafana, Prometheus & Loki](services/grafana_prometheus)** - a complete observability stack for metrics, logs and dashboards, including Prometheus, Loki, Alloy, Node Exporter, cAdvisor and smartctl_exporter.

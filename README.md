@@ -1,12 +1,14 @@
 # Homeserver
 
-> Link to my [article about selfhosting](https://witoldzawada.dev/blog/introduction-to-selfhosting)
+> [!NOTE]
+> For more background and context, you can also read my [article about selfhosting](https://witoldzawada.dev/blog/introduction-to-selfhosting).
 
 In this guide, you'll find easy-to-follow steps to set up your own server at home using ***Linux***, ***Docker***, and either ***[Port Forwarding](ports)*** or ***[Cloudflare Tunnels](tunnels)***. 
 
 Please note that some parts of this guide are based on my personal preferences (e.g. the choice of Linux distros), and your setup for certain things may slightly differ. Let's begin, shall we?
 
-> **IMPORTANT!** I'll try to keep this guide free of any costs besides: power consumption, domain renewal and one-time purchases such as a router, therefore some things such as VPS or any subscription-based services may not be covered (or at least are not planned for now).
+> [!IMPORTANT]
+> This guide is intended to stay free of recurring costs, except for power consumption, domain renewal and one-time hardware purchases such as a router. For this reason, VPS-based setups and subscription-based services are not covered, or at least are not planned for now.
 
 
 ## 0. Things to Consider: Power Consumption, Hardware, Noise, Physical Size, Recommended Steps & Requirements

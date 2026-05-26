@@ -1,0 +1,12 @@
+services:
+  pufferpanel:
+    container_name: pufferpanel
+    image: pufferpanel/pufferpanel:latest
+    ports:
+      - "8085:8080"
+      - "5657:5657"
+    volumes:
+      - /srv/server/services/pufferpanel/config:/etc/pufferpanel
+      - /srv/server/services/pufferpanel/data:/var/lib/pufferpanel
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

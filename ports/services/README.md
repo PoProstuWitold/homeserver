@@ -29,5 +29,6 @@ Personal preference:
 - **[SFTPGo](sftpgo)** - SFTP server with HTTP/S Web UI and optional FTP/S and WebDAV.
 - **[Omni Tools](omni_tools)** - the ultimate toolkit for getting things done quickly!
 - **[Minecraft](minecraft)** - Minecraft server with your own IP.
+- **[PufferPanel](pufferpanel)** - a general-purpose game server management panel with Web UI, file manager, SFTP access, console access, backups and server templates.
 - **[Uptime Kuma](uptime_kuma)** - a fancy selfhosted monitoring tool.
 - **[Grafana, Prometheus & Loki](grafana_prometheus)** - a complete observability stack for metrics, logs and dashboards, including Prometheus, Loki, Alloy, Node Exporter, cAdvisor and smartctl_exporter.
