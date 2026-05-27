@@ -26,7 +26,7 @@ You can use an older PC, a **[Raspberry Pi 5](https://www.raspberrypi.com/produc
 
 In this guide, I will be using a **[Lenovo ThinkCentre M70q Gen 2](https://pcsupport.lenovo.com/us/en/products/desktops-and-all-in-ones/thinkcentre-m-series-desktops/thinkcentre-m70q-gen-2/documentation/?linkTrack=footer%3ASupport_Manuals)** equipped with an [Intel Core i5-11400T](https://www.cpubenchmark.net/cpu.php?id=4406&cpu=Intel+Core+i5-11400T+%40+1.30GHz) processor, **32 GB DDR4 memory**, and a **2 TB NVMe SSD**.
 
-This setup is powerful enough to run multiple selfhosted services while still staying reasonably power-efficient. Under light workloads, it typically consumes around **30-40W**.
+This setup is powerful enough to run multiple selfhosted services while still staying reasonably power-efficient. Without a wall power meter, total power draw is only an estimate; software-side measurements show around **13–15 W** CPU package power under light workloads, suggesting roughly **20–30 W** total system power draw depending on configuration and workload.
 
 ### Hardware
 
