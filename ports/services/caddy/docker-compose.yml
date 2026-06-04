@@ -10,6 +10,7 @@ services:
       - "443:443/udp" # HTTP/3 port (optional)
     networks:
       - caddy
+      - caddy_private
       - nextcloud-aio
     volumes:
       - /srv/server/services/caddy/data:/data
@@ -18,7 +19,7 @@ services:
       - /srv/server/services/caddy/logs:/var/log/caddy
       - /srv/server/services/caddy/GeoLite2-City.mmdb:/etc/caddy/GeoLite2-City.mmdb
     environment:
-      - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
+      - CLOUDFLARE_API_TOKEN=
       - ACME_AGREE=true
       - BASE_URL=your-domain.tld
       - CROWDSEC_API_KEY=
@@ -40,6 +41,7 @@ services:
       - 6060:6060 # Prometheus API endpoint
     networks:
       - caddy
+      - caddy_private
     restart: unless-stopped
     security_opt:
       - no-new-privileges=true
@@ -47,6 +49,9 @@ services:
 networks:
   caddy:
     name: caddy
+    external: true
+  caddy_private:
+    name: caddy_private
     external: true
   nextcloud-aio:
     name: nextcloud-aio

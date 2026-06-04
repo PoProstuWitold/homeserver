@@ -1,17 +1,63 @@
 # Caddy
-[Caddy Reverse Proxy with Cloudflare DNS, Trusted Proxy and CrowdSec addons](https://github.com/serfriz/caddy-custom-builds/tree/main/caddy-cloudflare-ddns-crowdsec-geoip-security) is a powerful, enterprise-ready, open source web server with automatic HTTPS written in Go. This Docker image adds Cloudflare LetsEncrypt support to the base image.
+[Caddy Reverse Proxy with Cloudflare DNS, Trusted Proxy and CrowdSec addons](https://github.com/serfriz/caddy-custom-builds/tree/main/caddy-cloudflare-ddns-crowdsec-geoip-security) is a powerful, enterprise-ready, open source web server with automatic HTTPS written in Go. This Docker image adds Cloudflare Let's Encrypt support to the base image.
 
-Fill ``CLOUDFLARE_API_TOKEN`` according to docs from link above.
+Set ``CLOUDFLARE_API_TOKEN`` according to the documentation linked above.
 
-Before using image you have to create Docker network named ``caddy`` either with Portainer or command:
+Before using this image, create a Docker network named ``caddy`` either with Portainer or command:
 
 ```bash
 docker network create caddy
 ```
 
+## DNS records
+
+This Caddy setup assumes that public DNS is handled by **Cloudflare**, while private LAN/VPN DNS records are handled by **AdGuard Home**.
+
+More details about split DNS, private `*.lan` subdomains and DNS rewrites are described in the **AdGuard Home** service documentation in this repository.
+
+### Cloudflare DNS records
+
+| Type | Name | Content | Proxy status | Purpose |
+|---|---|---|---|---|
+| `A` | `your-domain.tld` | `PUBLIC_SERVER_IP` | Proxied | Public root domain |
+| `A` | `*.your-domain.tld` | `PUBLIC_SERVER_IP` | Proxied | Public wildcard services |
+| `A` | `lan.your-domain.tld` | `192.0.2.1` | DNS only | Placeholder for private LAN zone |
+| `A` | `*.lan.your-domain.tld` | `192.0.2.1` | DNS only | Placeholder for private LAN wildcard |
+
+`192.0.2.1` is a documentation/example IP address. It is used here only as a harmless public placeholder for private `*.lan` records.
+
+Real private LAN/VPN resolution is handled by AdGuard Home.
+
+### AdGuard Home DNS rewrites
+
+| Domain | Target | Purpose |
+|---|---|---|
+| `lan.your-domain.tld` | `HOMESERVER_IP` | Private LAN/VPN test endpoint |
+| `*.lan.your-domain.tld` | `HOMESERVER_IP` | Private LAN/VPN wildcard services |
+
+Example private records resolved by AdGuard Home:
+
+| Domain | Target |
+|---|---|
+| `adguard.lan.your-domain.tld` | `HOMESERVER_IP` |
+| `filebrowser.lan.your-domain.tld` | `HOMESERVER_IP` |
+| `pufferpanel.lan.your-domain.tld` | `HOMESERVER_IP` |
+| `grafana.lan.your-domain.tld` | `HOMESERVER_IP` |
+| `uptime.lan.your-domain.tld` | `HOMESERVER_IP` |
+| `home.lan.your-domain.tld` | `HOMESERVER_IP` |
+
+Replace:
+
+- `your-domain.tld` with your real domain,
+- `PUBLIC_SERVER_IP` with your public server IP address,
+- `HOMESERVER_IP` with your local homeserver IP address.
+
+Do not point public `*.lan` records to the real homeserver IP address.
+
+
 It will be **really** important later on because if both *caddy* and some other web service (e.g. *homarr*, *mealie*) are in the same network, they can talk to each other with their names which makes managing server easier.
 
-Additionaly you can do same with network named ``nextcloud-aio`` if you want to use **NextCloud AIO** image. The reason for this is that *NextCloud AIO* spawns many containers and automatically adds them to network ``nextcloud-aio`` with no possibility to add them to different network.
+Additionally you can do same with network named ``nextcloud-aio`` if you want to use **NextCloud AIO** image. The reason for this is that *NextCloud AIO* spawns many containers and automatically adds them to network ``nextcloud-aio`` with no possibility to add them to different network.
 
 Example config file for Caddy:
 
@@ -42,7 +88,7 @@ Example config file for Caddy:
                 include http.log.access
         }
 
-        # crowdsec
+        # CrowdSec bouncer integration
         crowdsec {
                 api_url http://crowdsec:8080
                 api_key {env.CROWDSEC_API_KEY}
@@ -50,7 +96,7 @@ Example config file for Caddy:
 
         order crowdsec first
 
-        # caddy-cloudflare-ip
+        # Trust Cloudflare only as reverse proxy
         servers {
                 trusted_proxies cloudflare
                 client_ip_headers CF-Connecting-IP
@@ -80,42 +126,60 @@ Example config file for Caddy:
         }
 }
 
+(private_secure) {
+        # LAN, WireGuard clients and optional wg-easy/Docker NAT address seen by Caddy
+        @private client_ip YOUR_LAN_SUBNET YOUR_VPN_SUBNET CADDY_WG_NAT_IP/32 OPTIONAL_IPV6_PRIVATE_SUBNET
+
+        handle @private {
+                import secure *
+                reverse_proxy {args[0]}
+        }
+
+        respond "Forbidden" 403
+}
+
+# ============================================================
+# Public wildcard services
+# ============================================================
+
 *.{env.BASE_URL} {
         import web
 
         @geoip {
                 maxmind_geolocation {
                         db_path "/etc/caddy/GeoLite2-City.mmdb"
-                        allow_countries PL
+                        allow_countries YOUR_COUNTRY_CODE
                 }
         }
 
-        # My apps
+        # Authentication
+        @authelia host auth.{env.BASE_URL}
+        handle @authelia {
+                reverse_proxy @geoip authelia:9091
+        }
 
-        # DoggoPaste
+        # My Apps
         @doggopaste host doggopaste.{env.BASE_URL}
         handle @doggopaste {
-                import secure *
+                import secure /dashboard
                 reverse_proxy @geoip doggopaste:3002
         }
 
-        # Pizzeria
         @pizzeria host pizzeria.{env.BASE_URL}
         handle @pizzeria {
-                reverse_proxy pizzeria:3005
+                reverse_proxy @geoip pizzeria:3005
         }
 
-        # Nuntius Feed
         @nuntius_feed host feed.{env.BASE_URL}
         handle @nuntius_feed {
                 import secure *
                 reverse_proxy @geoip nuntius_feed:3006
         }
 
-        # Internet
-        @authelia host auth.{env.BASE_URL}
-        handle @authelia {
-                reverse_proxy @geoip authelia:9091
+        # Public Selfhosted Apps
+        @nextcloud host nextcloud.{env.BASE_URL}
+        handle @nextcloud {
+                reverse_proxy @geoip nextcloud-aio-apache:11000
         }
 
         @mealie host mealie.{env.BASE_URL}
@@ -124,37 +188,14 @@ Example config file for Caddy:
                 reverse_proxy @geoip mealie:9000
         }
 
-        @dashdot host dashdot.{env.BASE_URL}
-        handle @dashdot {
-                reverse_proxy @geoip dashdot:3001
-        }
-
-        @nextcloud host nextcloud.{env.BASE_URL}
-        handle @nextcloud {
-                reverse_proxy @geoip nextcloud-aio-apache:11000
-        }
-
         @linkwarden host linkwarden.{env.BASE_URL}
         handle @linkwarden {
                 import secure *
                 reverse_proxy @geoip linkwarden:3000
         }
 
-        @uptime_kuma host uptime.{env.BASE_URL}
-        handle @uptime_kuma {
-                import secure *
-                reverse_proxy @geoip uptime_kuma:3001
-        }
-
-        @grafana host grafana.{env.BASE_URL}
-        handle @grafana {
-                import secure *
-                reverse_proxy @geoip grafana:3000
-        }
-
         @jellyfin host jellyfin.{env.BASE_URL}
         handle @jellyfin {
-                import secure /web/#/dashboard
                 reverse_proxy @geoip jellyfin:8096
         }
 
@@ -164,14 +205,8 @@ Example config file for Caddy:
                 reverse_proxy @geoip jellyseerr:5055
         }
 
-        @pastefy host pastefy.{env.BASE_URL}
-        handle @pastefy {
-                reverse_proxy @geoip pastefy:80
-        }
-
         @gitea host gitea.{env.BASE_URL}
         handle @gitea {
-                import secure /user/login
                 reverse_proxy @geoip gitea:3000
         }
 
@@ -185,18 +220,15 @@ Example config file for Caddy:
                 reverse_proxy @geoip omni_tools:80
         }
 
-        # Metrics
-        @metrics host metrics.{env.BASE_URL}
-        handle @metrics {
-                metrics
-        }
-
         # Not Found
-        @not_found host *.{env.BASE_URL}
-        handle @not_found {
+        handle {
                 respond "Not Found" 404
         }
 }
+
+# ============================================================
+# Public root domain
+# ============================================================
 
 {env.BASE_URL} {
         import web
@@ -204,16 +236,110 @@ Example config file for Caddy:
         @geoip {
                 maxmind_geolocation {
                         db_path "/etc/caddy/GeoLite2-City.mmdb"
-                        allow_countries PL
+                        allow_countries YOUR_COUNTRY_CODE
                 }
         }
 
-        @homarr host {env.BASE_URL}
-        handle @homarr {
-                reverse_proxy @geoip homarr:7575
+        handle @geoip {
+                reverse_proxy homarr:7575
+        }
+
+        respond "Forbidden" 403
+}
+
+# ============================================================
+# Private LAN/VPN dashboard
+# ============================================================
+
+lan.{env.BASE_URL} {
+        import web
+
+        @private client_ip YOUR_LAN_SUBNET YOUR_VPN_SUBNET CADDY_WG_NAT_IP/32 OPTIONAL_IPV6_PRIVATE_SUBNET
+
+        handle @private {
+                respond "LAN is working. GLHF!" 200
+        }
+
+        respond "Forbidden" 403
+}
+
+# ============================================================
+# Private LAN/VPN services
+# ============================================================
+
+*.lan.{env.BASE_URL} {
+        import web
+
+        # Admin
+        @adguard host adguard.lan.{env.BASE_URL}
+        handle @adguard {
+                import private_secure adguard_home:3000
+        }
+
+        @filebrowser host filebrowser.lan.{env.BASE_URL}
+        handle @filebrowser {
+                import private_secure filebrowser:80
+        }
+
+        @pufferpanel host pufferpanel.lan.{env.BASE_URL}
+        handle @pufferpanel {
+                import private_secure pufferpanel:8080
+        }
+
+        # Monitoring
+        @grafana host grafana.lan.{env.BASE_URL}
+        handle @grafana {
+                import private_secure grafana:3000
+        }
+
+        @uptime_kuma host uptime.lan.{env.BASE_URL}
+        handle @uptime_kuma {
+                import private_secure uptime_kuma:3001
+        }
+
+        @dashdot host dashdot.lan.{env.BASE_URL}
+        handle @dashdot {
+                import private_secure dashdot:3001
+        }
+
+        # Caddy Metrics
+        @metrics host metrics.lan.{env.BASE_URL}
+        handle @metrics {
+                @private client_ip YOUR_LAN_SUBNET YOUR_VPN_SUBNET CADDY_WG_NAT_IP/32 OPTIONAL_IPV6_PRIVATE_SUBNET
+
+                handle @private {
+                        metrics
+                }
+
+                respond "Forbidden" 403
+        }
+
+        # Misc/My Apps
+        # Home Assistant
+        @homeassistant host home.lan.{env.BASE_URL}
+        handle @homeassistant {
+                @private client_ip YOUR_LAN_SUBNET YOUR_VPN_SUBNET CADDY_WG_NAT_IP/32 OPTIONAL_IPV6_PRIVATE_SUBNET
+
+                handle @private {
+                        reverse_proxy homeassistant:8123
+                }
+
+                respond "Forbidden" 403
+        }
+
+        # Not Found
+        handle {
+                respond "Not Found" 404
         }
 }
 ```
+
+Replace:
+- `YOUR_LAN_SUBNET` with your LAN subnet
+- `YOUR_VPN_SUBNET` with your WireGuard subnet
+- `CADDY_WG_NAT_IP/32` with the optional Docker/WireGuard NAT address seen by Caddy
+- `OPTIONAL_IPV6_PRIVATE_SUBNET` with your private IPv6 subnet, or remove it if unused
+- `YOUR_COUNTRY_CODE` with your GeoIP country code, or remove the GeoIP matcher if unused
 
 ## Crowdsec
 
@@ -248,8 +374,8 @@ description: "Whitelist of known, friendly IP addresses"
 whitelist:
   reason: "Known addresses"
   ip:
-    - "your server ipv4"
-    - "another ipv4"
+    - "YOUR_SERVER_PUBLIC_IP"
+    - "ANOTHER_TRUSTED_PUBLIC_IP"
 ```
 
 Restart container and after executing command ``docker exec -it crowdsec cscli parsers list`` you can see that another parser - ``homeserver/whitelists`` - has been added.
@@ -257,6 +383,8 @@ Restart container and after executing command ``docker exec -it crowdsec cscli p
 ## GeoLite2
 
 If you want to use **GeoLite2** module, you need to do a couple of things.
+
+In the example Caddyfile, replace `YOUR_COUNTRY_CODE` with the country code you want to allow, or remove the GeoIP matcher if you do not want country-based filtering.
 
 1. Create developer account on [dev.maxmind.com](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data).
 
@@ -294,6 +422,7 @@ services:
       - "443:443/udp" # HTTP/3 port (optional)
     networks:
       - caddy
+      - caddy_private
       - nextcloud-aio
     volumes:
       - /srv/server/services/caddy/data:/data
@@ -302,7 +431,7 @@ services:
       - /srv/server/services/caddy/logs:/var/log/caddy
       - /srv/server/services/caddy/GeoLite2-City.mmdb:/etc/caddy/GeoLite2-City.mmdb
     environment:
-      - CLOUDFLARE_API_TOKEN=YOUR_CLOUDFLARE_API_TOKEN
+      - CLOUDFLARE_API_TOKEN=
       - ACME_AGREE=true
       - BASE_URL=your-domain.tld
       - CROWDSEC_API_KEY=
@@ -324,6 +453,7 @@ services:
       - 6060:6060 # Prometheus API endpoint
     networks:
       - caddy
+      - caddy_private
     restart: unless-stopped
     security_opt:
       - no-new-privileges=true
@@ -331,6 +461,9 @@ services:
 networks:
   caddy:
     name: caddy
+    external: true
+  caddy_private:
+    name: caddy_private
     external: true
   nextcloud-aio:
     name: nextcloud-aio
