@@ -299,14 +299,14 @@ scrape_configs:
   - job_name: "CrowdSec"
     static_configs:
       - targets:
-          - "crowdsec-or-hostname:6060"
+          - "server_ipv4:6060"
         labels:
           machine: "SERVER_NAME"
 
   - job_name: "Caddy"
     static_configs:
       - targets:
-          - "metrics.your-domain.tld"
+          - "metrics.lan.your-domain.tld"
         labels:
           machine: "SERVER_NAME"
 
