@@ -1,63 +1,64 @@
 # Home Assistant + Zigbee2MQTT + Mosquitto + SLZB-06MU
 
-> [!WARNING]
-> These instructions are currently a work in progress.
->
-> The setup described here has not been fully tested in my own environment yet.
->
-> Some configuration values, paths, ports, or device-specific settings may still require adjustments after real hardware testing.
->
-> **Use this as a draft reference, not as a final production-ready guide.**
+Secure local smart home stack for Zigbee devices.
 
-Local smart home stack based on:
-- Docker
+Stack:
 - Home Assistant
 - Zigbee2MQTT
 - Mosquitto MQTT
 - SMLIGHT SLZB-06MU
+- Docker Compose
+- Caddy reverse proxy
+- LAN/VPN-only access model
 
-Everything runs locally without depending on vendor cloud services.
-
----
-
-## Table of Contents
-
-- [Architecture](#architecture)
-- [Requirements](#requirements)
-- [Directory Structure](#directory-structure)
-- [Mosquitto MQTT Configuration](#mosquitto-mqtt-configuration)
-- [Zigbee2MQTT Configuration](#zigbee2mqtt-configuration)
-- [Docker Compose](#docker-compose)
-- [Home Assistant](#home-assistant)
-- [Pairing Zigbee Devices](#pairing-zigbee-devices)
+This setup keeps Zigbee, MQTT and coordinator management private. Home Assistant is exposed only through a controlled LAN/VPN route.
 
 ---
 
 ## Architecture
 
-Zigbee devices connect wirelessly to the SMLIGHT SLZB-06MU coordinator.
-
-The coordinator is connected to the local network via Ethernet and is used by Zigbee2MQTT to communicate with Zigbee devices.
-
-Zigbee2MQTT sends device data to Mosquitto MQTT, and Home Assistant reads that data from MQTT.
-
-This keeps the whole smart home setup local, without relying on vendor cloud services.
-
----
-
-## Requirements
-
-- Linux server / homelab
-- Docker
-- Docker Compose
-- Router
-- Ethernet
-- SMLIGHT SLZB-06MU
-- USB-C power adapter for SMLIGHT SLZB-06MU
+```txt
+Zigbee devices
+    ↓
+SMLIGHT SLZB-06MU
+    ↓ Ethernet / TCP
+Zigbee2MQTT
+    ↓ MQTT
+Mosquitto
+    ↓ MQTT integration
+Home Assistant
+    ↓ Caddy HTTPS reverse proxy
+LAN/VPN clients
+```
 
 ---
 
-## Directory Structure
+## Security model
+
+Public internet should not reach:
+- Mosquitto MQTT
+- Zigbee2MQTT frontend
+- SLZB-06MU web panel
+- internal Docker networks
+- MQTT credentials
+- device administration panels
+
+The setup avoids:
+- `privileged: true`
+- `network_mode: host`
+- public MQTT port
+- public Zigbee2MQTT frontend
+- public SLZB-06MU panel
+
+Home Assistant should be available through a private LAN/VPN domain, for example:
+
+```txt
+https://ha.lan.your-domain.tld
+```
+
+---
+
+## Directory structure
 
 ```txt
 /srv/server/services/smarthome
@@ -71,7 +72,6 @@ This keeps the whole smart home setup local, without relying on vendor cloud ser
 ```
 
 Create directories:
-
 ```bash
 sudo mkdir -p /srv/server/services/smarthome
 cd /srv/server/services/smarthome
@@ -81,86 +81,98 @@ sudo mkdir -p mosquitto/config mosquitto/data mosquitto/log
 sudo mkdir -p zigbee2mqtt/data
 ```
 
-[Back to top](#table-of-contents)
-
 ---
 
-## Mosquitto MQTT Configuration
+## Mosquitto MQTT
 
-Create the config file:
-
+Create config:
 ```bash
 sudo nano /srv/server/services/smarthome/mosquitto/config/mosquitto.conf
 ```
 
-Configuration:
-
+`mosquitto.conf`:
 ```txt
 persistence true
 persistence_location /mosquitto/data/
 
 listener 1883
-allow_anonymous true
+allow_anonymous false
+password_file /mosquitto/config/passwordfile
 ```
 
-[Back to top](#table-of-contents)
+Create MQTT user:
+```bash
+sudo docker run --rm -it \
+  -v /srv/server/services/smarthome/mosquitto/config:/mosquitto/config \
+  eclipse-mosquitto:latest \
+  mosquitto_passwd -c /mosquitto/config/passwordfile homeassistant
+```
+
+Fix permissions:
+```bash
+sudo docker run --rm -u root \
+  -v /srv/server/services/smarthome/mosquitto/config:/mosquitto/config \
+  eclipse-mosquitto:latest \
+  sh -c "chown mosquitto:mosquitto /mosquitto/config/passwordfile && chmod 600 /mosquitto/config/passwordfile"
+```
 
 ---
 
-## Zigbee2MQTT Configuration
+## Zigbee2MQTT
 
-Create the config file:
-
+Create config:
 ```bash
 sudo nano /srv/server/services/smarthome/zigbee2mqtt/data/configuration.yaml
 ```
 
-Configuration:
-
+`configuration.yaml`:
 ```yaml
 homeassistant:
   enabled: true
-
 frontend:
   enabled: true
   port: 8080
-
 mqtt:
   server: mqtt://mosquitto:1883
-
+  user: homeassistant
+  password: MQTT_PASSWORD
 serial:
   port: tcp://SLZB_06MU_IP:6638
-
+  baudrate: 115200
+  adapter: ember
+  disable_led: false
 advanced:
   channel: 15
-
-permit_join: false
+  transmit_power: 20
 ```
 
-> [!IMPORTANT]
-> Replace `SLZB_06MU_IP` with the IP address of your SMLIGHT SLZB-06MU coordinator. **This is not the server IP address.**
+Replace:
+- `SLZB_06MU_IP` with the real coordinator IP
+- `MQTT_PASSWORD` with the Mosquitto user password
 
-SLZB-06MU connections:
-- Ethernet → router
-- USB-C → power adapter
-
-[Back to top](#table-of-contents)
+SLZB-06MU connection:
+- Ethernet to router/switch
+- USB-C to power adapter
 
 ---
 
 ## Docker Compose
 
-`docker-compose.yml`
-
+`docker-compose.yml`:
 ```yaml
 services:
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:stable
     container_name: homeassistant
-    privileged: true
-    network_mode: host
     environment:
       TZ: Europe/Warsaw
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 8123:8123
+    networks:
+      - caddy_private
+      - smarthome
     volumes:
       - /srv/server/services/smarthome/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
@@ -169,8 +181,8 @@ services:
   mosquitto:
     image: eclipse-mosquitto:latest
     container_name: mosquitto
-    ports:
-      - 1883:1883
+    security_opt:
+      - no-new-privileges:true
     networks:
       - smarthome
     volumes:
@@ -184,10 +196,12 @@ services:
     container_name: zigbee2mqtt
     depends_on:
       - mosquitto
-    ports:
-      - 8080:8080
     environment:
       TZ: Europe/Warsaw
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 8086:8080
     networks:
       - smarthome
     volumes:
@@ -195,102 +209,108 @@ services:
     restart: unless-stopped
 
 networks:
+  caddy_private:
+    external: true
   smarthome:
     name: smarthome
 ```
 
-[Back to top](#table-of-contents)
+Notes:
+- Home Assistant is reachable through Caddy on `caddy_private`.
+- Home Assistant is also exposed on the host at port `8123` for LAN/VPN access.
+- Mosquitto is reachable only inside the `smarthome` network.
+- Zigbee2MQTT communicates with Mosquitto through the `smarthome` network.
+- Zigbee2MQTT frontend is exposed on the host at port `8086` for LAN/VPN access only.
+- Do not port forward `8123` or `8086` to the public internet.
 
 ---
 
-## Home Assistant
+## Caddy
 
-Home Assistant:
+Example private route:
+```caddyfile
+@homeassistant host home.lan.{env.BASE_URL}
+handle @homeassistant {
+    @private client_ip LAN_SUBNET VPN_SUBNET
 
-```txt
-http://SERVER_IP:8123
+    handle @private {
+        reverse_proxy homeassistant:8123
+    }
+
+    respond "Forbidden" 403
+}
 ```
 
-Zigbee2MQTT:
+Replace:
+- `LAN_SUBNET` with your local network subnet, for example `192.168.20.0/24`
+- `VPN_SUBNET` with your VPN subnet, for example `10.8.0.0/24`
 
-```txt
-http://SERVER_IP:8080
-```
-
-SLZB-06MU:
-
-```txt
-http://SLZB_06MU_IP
-```
-
-Add MQTT integration:
-
-```txt
-Settings
-→ Devices & services
-→ Add integration
-→ MQTT
-```
-
-Configuration:
-
-```txt
-Broker:
-127.0.0.1
-
-Port:
-1883
-```
-
-If it does not work:
-
-```txt
-Broker:
-SERVER_IP
-```
-
-[Back to top](#table-of-contents)
+Do not expose through Caddy:
+- Mosquitto
+- Zigbee2MQTT frontend
+- SLZB-06MU panel
 
 ---
 
-## Pairing Zigbee Devices
+## Home Assistant proxy config
 
-Edit:
-
-```bash
-sudo nano /srv/server/services/smarthome/zigbee2mqtt/data/configuration.yaml
-```
-
-Change:
-
-```yaml
-permit_join: true
-```
-
-Restart:
-
-```bash
-sudo docker restart zigbee2mqtt
-```
-
-Open:
-
+If Home Assistant is behind Caddy, add this to:
 ```txt
-http://SERVER_IP:8080
+/srv/server/services/smarthome/homeassistant/configuration.yaml
 ```
 
-Pair your Zigbee device.
-
-After pairing:
-
+Example:
 ```yaml
-permit_join: false
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.2.0/24
+    - 172.16.14.0/24
 ```
 
-Restart again:
-
+Check Caddy Docker networks:
 ```bash
-sudo docker restart zigbee2mqtt
+sudo docker network inspect caddy | grep -E '"Subnet"|IPv4Address'
+sudo docker network inspect caddy_private | grep -E '"Subnet"|IPv4Address'
 ```
 
-[Back to top](#table-of-contents)
+Do not use:
+```yaml
+trusted_proxies:
+  - 0.0.0.0/0
+```
+
+---
+
+## Backup
+
+Backup:
+```txt
+/srv/server/services/smarthome/homeassistant
+/srv/server/services/smarthome/mosquitto/config
+/srv/server/services/smarthome/mosquitto/data
+/srv/server/services/smarthome/zigbee2mqtt/data
+```
+
+Important files:
+- `homeassistant/configuration.yaml`
+- `mosquitto/config/mosquitto.conf`
+- `mosquitto/config/passwordfile`
+- `zigbee2mqtt/data/configuration.yaml`
+- `zigbee2mqtt/data/database.db`
+
+> [!IMPORTANT]
+> Do not commit `mosquitto/config/passwordfile` to a public repository.
+
+---
+
+## Notes
+
+- Keep Mosquitto private.
+- Keep Zigbee2MQTT private.
+- Keep the SLZB-06MU web panel private.
+- Use Home Assistant native authentication and 2FA.
+- Use LAN/VPN access for administration.
+- Keep coordinator firmware updated.
+- Keep Zigbee2MQTT and Home Assistant updated.
+- Do not expose MQTT or Zigbee administration panels to the public internet.
