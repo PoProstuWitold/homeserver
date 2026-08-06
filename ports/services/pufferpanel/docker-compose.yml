@@ -8,5 +8,6 @@ services:
     volumes:
       - /srv/server/services/pufferpanel/config:/etc/pufferpanel
       - /srv/server/services/pufferpanel/data:/var/lib/pufferpanel
+      - /srv/server/services/pufferpanel/logs:/var/log/pufferpanel
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped

@@ -26,7 +26,7 @@ services:
       - PGID=0
     volumes:
       - /srv:/srv
-      - /srv/server/services/filebrowser/database/filebrowser.db:/database/filebrowser.db
-      - /srv/server/services/filebrowser/config/settings.json:/config/settings.json
+      - /srv/server/services/filebrowser/config:/config
+      - /srv/server/services/filebrowser/database:/database
     restart: unless-stopped
 ```

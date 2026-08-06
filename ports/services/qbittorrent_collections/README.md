@@ -91,6 +91,8 @@ services:
     environment:
       - TZ=Europe/Warsaw
       - LANG=en_US
+    volumes:
+      - /srv/server/services/flaresolverr/config:/config
     ports:
       - 8191:8191
     restart: unless-stopped
