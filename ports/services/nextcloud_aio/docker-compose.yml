@@ -7,8 +7,10 @@ services:
     volumes:
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed as otherwise the built-in backup solution will not work
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    devices:
+    - /dev/dri
     ports:
-      - 8080:8080
+      - 8081:8080
     environment:
       AIO_DISABLE_BACKUP_SECTION: false
       APACHE_PORT: 11000
@@ -16,14 +18,13 @@ services:
       BORG_RETENTION_POLICY: --keep-within=7d --keep-weekly=4 --keep-monthly=6
       COLLABORA_SECCOMP_DISABLED: false
       NEXTCLOUD_DATADIR: /srv/server/services/nextcloud/data
-      NEXTCLOUD_MOUNT: /mnt/
+      NEXTCLOUD_MOUNT: /srv/server/media
       NEXTCLOUD_UPLOAD_LIMIT: 10G
       NEXTCLOUD_MAX_TIME: 3600
       NEXTCLOUD_MEMORY_LIMIT: 2048M
       NEXTCLOUD_STARTUP_APPS: deck twofactor_totp tasks calendar contacts notes
       NEXTCLOUD_ADDITIONAL_APKS: imagemagick
       NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS: imagick
-      NEXTCLOUD_ENABLE_DRI_DEVICE: true
       NEXTCLOUD_KEEP_DISABLED_APPS: false
       TALK_PORT: 3478
       WATCHTOWER_DOCKER_SOCKET_PATH: /var/run/docker.sock

@@ -1,19 +1,52 @@
 services:
   backrest:
-    image: garethgeorge/backrest:latest
+    image: ghcr.io/garethgeorge/backrest:latest
     container_name: backrest
     hostname: backrest
     volumes:
-      - /srv/server/services/backrest/data:/data
-      - /srv/server/services/backrest/config:/config
-      - /srv/server/services/backrest/cache:/cache
-      - /srv/server:/userdata # [optional] mount local paths to backup here.
-      - /srv/server/backup/repos:/repos # [optional] mount repos if using local storage, not necessary for remotes e.g. B2, S3, etc.
+      - type: bind
+        source: /srv/server/services/backrest/data
+        target: /data
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/server/services/backrest/config
+        target: /config
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/server/services/backrest/cache
+        target: /cache
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/server/services/backrest/tmp
+        target: /tmp
+        bind:
+          create_host_path: false
+      # Backup Source
+      - type: bind
+        source: /
+        target: /host
+        read_only: true
+        bind:
+          propagation: rslave
+          create_host_path: false
+      # External SSD
+      - type: bind
+        source: /mnt/backup/backrest
+        target: /repos
+        bind:
+          create_host_path: false
     environment:
       - BACKREST_DATA=/data
       - BACKREST_CONFIG=/config/config.json
       - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
       - TZ=Europe/Warsaw
-    restart: unless-stopped
+    security_opt:
+      - label=disable
+      - no-new-privileges=true
     ports:
-      - 9898:9898
+      - "9898:9898"
+    restart: unless-stopped
