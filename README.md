@@ -3,122 +3,115 @@
 > [!NOTE]
 > For more background and context, you can also read my [article about selfhosting](https://witoldzawada.dev/blog/introduction-to-selfhosting).
 
-This guide walks through building and maintaining a home server using **Linux**, **Docker**, virtualization, and different approaches to remote access and service exposure.
+This repository documents several generations of my home server. The current architecture is based on **Proxmox VE**, AlmaLinux virtual machines, **Podman**, Infrastructure as Code, segmented networking and a dedicated backup target. Older bare-metal Docker setups remain in the repository as stable historical/reference implementations.
 
 The repository currently contains three setups:
 
 | Setup | Status | Description |
 | --- | --- | --- |
-| **[Proxmox VE](proxmox)** | Current / in progress | The current setup, built around Proxmox VE, virtual machines, LXC containers, and Infrastructure as Code |
-| **[Port Forwarding](ports)** | Stable / legacy | A complete bare-metal setup based on AlmaLinux, Docker, direct port forwarding, reverse proxying, and VPN access |
-| **[Cloudflare Tunnels](tunnels)** | Legacy | An older setup using Cloudflare Tunnels to expose services without directly opening ports on the home network |
+| **[Proxmox VE](proxmox)** | Current / active development | Current Hestia architecture: Proxmox VE, AlmaLinux VMs, Podman, VLANs, WireGuard on the router and Infrastructure as Code |
+| **[Port Forwarding](ports)** | Stable / legacy | Previous bare-metal AlmaLinux + Docker architecture with direct port forwarding and reverse proxying |
+| **[Cloudflare Tunnels](tunnels)** | Legacy | Older Cloudflare Tunnel architecture without directly exposing inbound web ports |
 
 > [!IMPORTANT]
-> The **[Port Forwarding](ports)** setup remains a complete and practical implementation of a traditional bare-metal home server. It represents the final version of my previous architecture and is kept as a stable reference, but it is no longer actively developed or updated.
+> The **[Port Forwarding](ports)** setup represents the final version of the previous bare-metal server. It is retained as a useful reference but is no longer the architecture being developed.
 
-Some parts of this guide reflect my personal preferences, such as Linux distributions, hardware, directory structure, networking, virtualization, and services. Your setup may differ depending on your hardware, network, and use case.
+Some details in this guide reflect my own hardware, network and operational preferences. Treat them as a reference design rather than universal requirements.
 
 > [!IMPORTANT]
-> This guide is intended to stay free of recurring costs, except for power consumption, domain renewal, and one-time hardware purchases such as a router or server device.
->
-> For this reason, VPS-based setups and subscription-based services are not covered, or at least are not planned for now.
+> The project is designed to avoid recurring infrastructure costs other than electricity and normal domain renewal. Public cloud/VPS dependencies are not required for the current setup.
 
 ---
 
 ## 0. Things to Consider Before Starting
 
-Before setting up a home server, it is worth planning the hardware, power usage, noise level, physical placement, network access, storage, and basic requirements.
+Before installing a hypervisor or applications, plan the hardware, physical placement, network segmentation, storage, backup target and exposure model.
 
 ### Power Consumption
 
-A home server usually runs 24/7, so power efficiency matters from the beginning.
+A home server normally runs 24/7, so idle efficiency matters more than peak benchmark performance.
 
-You can use an older PC or a compact business-class mini PC. Commonly used models include **Lenovo ThinkCentre**, **Dell OptiPlex**, and **HP EliteDesk**.
+The current reference host is a **[Lenovo ThinkCentre M70q Gen 2](https://pcsupport.lenovo.com/us/en/products/desktops-and-all-in-ones/thinkcentre-m-series-desktops/thinkcentre-m70q-gen-2/documentation/?linkTrack=footer%3ASupport_Manuals)**:
 
-The reference system used throughout this guide is a **[Lenovo ThinkCentre M70q Gen 2](https://pcsupport.lenovo.com/us/en/products/desktops-and-all-in-ones/thinkcentre-m-series-desktops/thinkcentre-m70q-gen-2/documentation/?linkTrack=footer%3ASupport_Manuals)** equipped with:
-
-| Component | Specification |
+| Component | Current specification |
 | --- | --- |
-| **CPU** | [Intel Core i5-11400T](https://www.cpubenchmark.net/cpu.php?id=4406&cpu=Intel+Core+i5-11400T+%40+1.30GHz) |
+| **CPU** | Intel Core i5-11400T |
 | **RAM** | 32 GB DDR4 |
-| **Storage** | 2 TB NVMe SSD |
+| **Primary storage** | 2 TB NVMe SSD |
+| **Backup storage** | 2 TB Crucial BX500 SSD |
+| **Network** | Wired Ethernet to an ASUS RT-BE88U router |
 
-This setup is powerful enough to run multiple selfhosted services and virtual machines while still remaining reasonably power-efficient.
+This is enough for several always-on application VMs, an 8 GB-heap Minecraft server, monitoring and occasional lab VMs while remaining much more power-efficient than typical rack hardware.
 
-Without a wall power meter, total power draw is only an estimate. Software-side measurements show around **13-15 W** of CPU package power under light workloads, suggesting roughly **20-30 W** of total system power draw depending on configuration and workload.
+Without a wall power meter, software-side readings are only estimates. Actual system draw depends on storage, peripherals, transcode activity, game-server load and CPU power states.
 
 ### Hardware
 
-Recommended hardware specifications:
+A practical baseline for a modern home server:
 
 | Component | Recommendation |
 | --- | --- |
-| **CPU** | A 4-core x86-64 CPU is a good baseline. Intel Core i3/i5 8th Gen or newer and comparable AMD CPUs are usually more than sufficient for a typical home server |
-| **GPU** | Not required for selfhosting. Avoid a dedicated GPU unless you plan to experiment with [cloud gaming](https://en.wikipedia.org/wiki/Cloud_gaming), hardware transcoding, AI workloads, or GPU passthrough |
-| **RAM** | 8 GB is a practical minimum. For multiple services or game servers, 16-32 GB is recommended |
-| **Storage** | Preferably full SSD storage with 512 GB or more |
+| **CPU** | 4+ modern x86-64 cores; more if running game servers, transcoding or build workloads |
+| **GPU** | Optional; integrated Intel graphics are useful for Jellyfin Quick Sync without a dedicated GPU |
+| **RAM** | 16 GB is comfortable for a small server; 32 GB is preferable when using multiple VMs or game servers |
+| **Primary storage** | SSD/NVMe strongly recommended |
+| **Backup storage** | Separate physical device, ideally with an additional off-host/off-site copy for critical data |
 
-For most typical home server workloads, **64 GB of RAM is more than necessary**, but it may be useful for virtualization, game servers, databases, or other memory-intensive workloads.
-
-For storage, an alternative to full SSD storage is to use a smaller **128-256 GB SSD for the operating system** combined with an HDD for larger data storage.
-
-SSDs are faster, quieter, and more energy-efficient, but usually more expensive per gigabyte.
+More RAM is useful only when the workload justifies it. The current 32 GB host is intentionally budgeted rather than blindly overprovisioned.
 
 ### Noise
 
-Consider noise levels, especially if your server will be placed in a bedroom, office, or shared living space.
+Mini PCs and business-class SFF systems are a good fit for a room or home office because they are generally quieter and more efficient than repurposed enterprise rack servers.
 
-Mini PCs are usually quiet and power-efficient, while older desktops or enterprise servers may be noticeably louder. If needed, place the server in a less disruptive location.
-
-A wired Ethernet connection is strongly recommended. Wi-Fi may work, but it can introduce lower speeds, higher latency, and reliability issues.
+Use wired Ethernet for the server whenever possible.
 
 ### Physical Size
 
-Physical size also matters. Enterprise servers, repurposed desktops, or storage-heavy builds can take up a lot of space, especially when using multiple HDDs or RAID arrays.
-
-Before choosing hardware, make sure you have enough space, decent ventilation, and easy access for maintenance.
+Leave enough ventilation and physical access for maintenance. External backup disks and future storage expansion also need space and reliable cabling.
 
 ### Recommended Steps
 
-Before installing the operating system, hypervisor, or services:
+Before installing anything:
 
-- Update the BIOS or firmware.
-- Check whether virtualization is enabled in BIOS/UEFI.
-- Enable IOMMU/VT-d if you plan to use PCI or GPU passthrough.
-- Decide where the server will be physically placed.
-- Plan your storage layout.
-- Use wired Ethernet whenever possible.
-- Plan your local IP addressing and DNS.
-- Decide which services should be public and which should remain available only through LAN/VPN.
-- Decide which setup best matches your requirements:
-  - **[Proxmox VE](proxmox)** for the current virtualized homelab architecture.
-  - **[Port Forwarding](ports)** for a simpler bare-metal Docker server with direct network exposure.
-  - **[Cloudflare Tunnels](tunnels)** if you prefer exposing web services without opening inbound ports.
-
-To update your BIOS, search for `"BIOS download"` together with the name of your motherboard, mini PC, laptop, or prebuilt system.
+- Update BIOS/UEFI and relevant firmware.
+- Enable CPU virtualization.
+- Enable IOMMU/VT-d when PCI/iGPU passthrough may be required.
+- Decide where the server will physically live.
+- Plan primary storage and an independent backup target.
+- Plan VLANs, trusted management access and local DNS.
+- Decide which services are public and which remain LAN/VPN-only.
+- Prefer wired Ethernet.
+- Decide whether the current **[Proxmox VE](proxmox)** architecture or one of the legacy approaches better matches your needs.
 
 ### Requirements
 
-The exact requirements depend on the setup you choose.
-
 #### Common Requirements
 
-- A machine where the server will run.
+- A machine capable of running the selected setup.
 - Basic Linux command-line knowledge.
 - Wired network access where possible.
-- A domain name if you want to expose services publicly.
-
-The examples in the **Docker-based setups** use **Cloudflare DNS**, so a Cloudflare account and a domain managed through Cloudflare are recommended for those setups.
+- A domain if you want friendly public/private service names.
+- A backup plan before storing irreplaceable data.
 
 #### Docker-based Setups
 
-For the **[Cloudflare Tunnels](tunnels)** and **[Port Forwarding](ports)** setups, Docker must be installed on the server.
+The legacy **[Cloudflare Tunnels](tunnels)** and **[Port Forwarding](ports)** guides use Docker.
 
 #### Proxmox VE
 
-For the **[Proxmox VE](proxmox)** setup, Proxmox VE runs directly on bare metal, while application workloads are intended to run inside virtual machines or LXC containers rather than directly on the hypervisor.
+The current **[Proxmox VE](proxmox)** setup runs Proxmox directly on bare metal. Application workloads run in AlmaLinux VMs and are containerized with Podman. The Proxmox host itself stays minimal and does not run normal application containers.
 
-The Proxmox management interface should remain available only from trusted LAN/VPN networks and should not be exposed directly to the Internet.
+The current production v1 design uses five always-on VMs:
+
+```text
+core01    3 GB
+apps01    6 GB
+media01   4 GB
+home01    2 GB
+games01  10 GB
+```
+
+An on-demand `lab01` is planned only when host memory headroom allows it.
 
 #### Remote Access Requirements
 
@@ -126,19 +119,11 @@ The Proxmox management interface should remain available only from trusted LAN/V
 | --- | ---: | ---: |
 | **Cloudflare Tunnels** | No | No |
 | **Port Forwarding** | Yes | Yes |
-| **Proxmox VE** | Yes | Yes |
+| **Proxmox VE** | Only for direct public exposure / router VPN reachability | Only for intentionally exposed services |
 
-For **Cloudflare Tunnels**, no public IP address or inbound port forwarding is required.
+The Proxmox management interface itself does **not** need a public IP and must not be port-forwarded. In the current setup, remote management is provided by WireGuard running on the ASUS router.
 
-For **Port Forwarding**, you need a **public IP address** that is reachable from the Internet, and your connection must not be behind CGNAT.
-
-The current **Proxmox VE** setup also requires a publicly reachable IP address because public services are exposed through the router to a reverse proxy running inside the virtualized environment. The Proxmox management interface itself remains private and is accessible only from trusted LAN/VPN networks.
-
-For setup-specific instructions, see:
-
-- **[Proxmox VE](proxmox)** - current setup
-- **[Port Forwarding](ports)** - stable, complete, legacy setup
-- **[Cloudflare Tunnels](tunnels)** - legacy setup
+The current Proxmox architecture can expose selected public applications through Traefik using router port forwarding, while management remains private.
 
 ---
 
@@ -147,17 +132,28 @@ For setup-specific instructions, see:
 ```text
 .
 ├── tunnels/     # Legacy Cloudflare Tunnel setup
-├── ports/       # Stable and complete legacy bare-metal setup
-└── proxmox/     # Current Proxmox-based homelab
+├── ports/       # Stable legacy bare-metal Docker setup
+└── proxmox/     # Current Proxmox + VM + Podman architecture
 ```
 
-The **Port Forwarding** setup remains fully usable as a reference implementation of a traditional bare-metal home server, but it is no longer actively developed or updated.
-
-The **Proxmox VE** setup is the current architecture and will receive future updates.
+The legacy guides remain useful as reference implementations, but only the Proxmox section represents the current Hestia architecture.
 
 ## Infrastructure as Code
 
-Infrastructure as Code and automation for the Proxmox-based setup are maintained separately in **[PoProstuWitold/homelab-infra](https://github.com/PoProstuWitold/homelab-infra)**.
+Infrastructure automation for the Proxmox setup is maintained separately in **[PoProstuWitold/homelab-infra](https://github.com/PoProstuWitold/homelab-infra)**.
 
-> [!NOTE]
-> The infrastructure repository is currently a **work in progress**.
+The current infrastructure repository already covers the validated host foundation:
+
+- Proxmox host baseline and SSH hardening with Ansible
+- nftables-based `proxmox-firewall` management policy
+- least-privilege OpenTofu identity and API token metadata
+- SOPS + hybrid post-quantum age secret handling
+- pinned AlmaLinux 10 cloud image and reusable VM template
+- reference VM provisioning and Ansible guest baseline
+- VLAN 40 guest networking
+- fail-closed external backup storage
+- scheduled VZDump retention policy
+- destructive VM backup/restore validation
+- pre-commit and Gitleaks repository safeguards
+
+The production five-VM topology and service placement are now defined. Production VM provisioning and service migration are the next implementation phase.
