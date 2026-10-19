@@ -1,19 +1,14 @@
 # Homeserver - Proxmox VE
 
-This section covers how to set up a personal home server using ***[Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview)***.
+This guide covers the Proxmox-based architecture of **[Hestia](../README.md)**, built on **[Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview)**, AlmaLinux and Podman.
 
-Unlike the previous ***[Port Forwarding](../ports)*** setup, where most services ran directly on one bare-metal AlmaLinux installation, the current architecture keeps Proxmox focused on virtualization and runs managed Linux workloads inside AlmaLinux virtual machines with Podman; Home Assistant runs in its own HAOS appliance.
+Unlike the earlier **[Port Forwarding](../ports)** setup, applications run inside dedicated virtual machines while the Proxmox host remains focused on virtualization. Five production VMs group services by responsibility: four AlmaLinux guests managed with Ansible and one Home Assistant OS appliance. This provides clear isolation boundaries without creating a separate VM for every application.
 
-The design deliberately avoids unnecessary guest sprawl: production v1 uses five VMs grouped by workload type. Four run AlmaLinux with Ansible and Podman; `home01` is a dedicated Home Assistant OS appliance. LXC remains available, but is not used for the current production topology.
+## Design Goals
 
-> [!NOTE]
-> This is the **current setup**. All five production VMs are provisioned, with validated host/guest baselines, network policies, backup infrastructure, core ingress/security services and observability backends. Media/game applications and some other services are still pending. The authoritative deployment state and remaining work live in [homelab-infra architecture](https://github.com/PoProstuWitold/homelab-infra/blob/main/docs/architecture.md) and [roadmap](https://github.com/PoProstuWitold/homelab-infra/blob/main/todo.md).
+The architecture combines a shared platform foundation with services organized by workload:
 
-## Goals & Features
-
-The architecture includes a mix of deployed infrastructure and planned workloads:
-
-- A dedicated ***Proxmox VE*** hypervisor running directly on bare metal
+- A dedicated **Proxmox VE** hypervisor running directly on bare metal
 - A minimal Proxmox host with no normal application containers running directly on it
 - Five production VMs: four managed AlmaLinux guests and one Home Assistant OS appliance
 - Podman as the standard application container runtime inside the four managed AlmaLinux production VMs
@@ -25,21 +20,17 @@ The architecture includes a mix of deployed infrastructure and planned workloads
 - Grafana with VictoriaMetrics and VictoriaLogs for observability
 - Initial telemetry using Grafana Alloy; additional host/Podman/SMART metrics are planned
 - A dedicated media VM with Jellyfin and planned Intel Quick Sync hardware transcoding
-- A dedicated Home Assistant OS VM on the Internal VLAN; IoT integration is a future step
+- A dedicated Home Assistant OS VM on the Internal VLAN for home automation
 - A dedicated game-server VM sized for an always-on Minecraft server
-- Reproducible infrastructure managed with ***OpenTofu***, ***Ansible***, ***cloud-init*** and ***SOPS + age***
+- Reproducible infrastructure managed with **OpenTofu**, **Ansible**, **cloud-init** and **SOPS + age**
 - Fail-closed Proxmox backups stored on a dedicated external SSD
 - A provisioned `lab01` VM that starts only on demand when memory headroom permits
 
-<!-- In the end your server may look like this (diagram made by me in [draw.io](https://draw.io/)): -->
+## 1. Installing Proxmox VE
 
-<!-- ![Diagram for homeserver with Proxmox VE](assets/diagram_proxmox.png) -->
+Start by downloading the latest stable **[Proxmox VE ISO Installer](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso)** and installing it directly on the server.
 
-## 1. Install Proxmox VE
-
-Start by downloading the latest stable ***[Proxmox VE ISO Installer](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso)*** and installing it directly on the server.
-
-The official installation documentation is available in the ***[Proxmox VE Administration Guide](https://pve.proxmox.com/pve-docs/pve-admin-guide.html)***.
+The official installation documentation is available in the **[Proxmox VE Administration Guide](https://pve.proxmox.com/pve-docs/pve-admin-guide.html)**.
 
 The current reference host is a Lenovo ThinkCentre M70q Gen 2 with an Intel Core i5-11400T, 32 GB RAM and a 2 TB NVMe SSD. A separate 2 TB Crucial BX500 SSD is used only for Proxmox VZDump backups.
 
@@ -58,27 +49,21 @@ Proxmox VE
 
 ZFS is valuable when its checksumming, snapshots, mirrors or RAID features are required, but it is not mandatory for a single-NVMe mini-PC homelab.
 
-### 1a. Basic Host Configuration
+### 1.1. Basic Host Configuration
 
 Keep the Proxmox management interface on a trusted, native/untagged LAN rather than a guest/server VLAN.
 
-Current reference values:
+Reference host configuration:
 
-| Setting | Current setup |
-|---|---|
+| Setting | Recommendation |
+| --- | --- |
 | **Hostname** | `pve01` |
-| **Management IP** | `192.168.50.10/24` |
-| **Gateway/router** | `192.168.50.1` |
+| **Management address** | Static private address outside the DHCP pool |
+| **Gateway** | Trusted LAN router |
 | **Management network** | Native / untagged trusted LAN |
 | **Network interface** | Wired Ethernet |
 
-The normal DHCP pool starts above the static infrastructure range, so `pve01` keeps a stable address.
-
-After installation, access the Web UI at:
-
-```text
-https://192.168.50.10:8006
-```
+After installation, access the Web UI at `https://<management-ip>:8006`.
 
 > [!WARNING]
 > Do **not** expose port `8006`, Proxmox SSH or console-management ports directly to the Internet.
@@ -89,7 +74,7 @@ The current host uses a dedicated non-root Linux administrator for SSH/sudo, a s
 
 For a single-node homelab, a Proxmox cluster is not required.
 
-### 1b. Package Repositories and Updates
+### 1.2. Package Repositories and Updates
 
 After installation:
 
@@ -105,21 +90,19 @@ The host also uses the newer nftables-based `proxmox-firewall` backend. Input de
 
 Do not install application stacks, databases, reverse proxies or a general-purpose Podman/Docker environment directly on `pve01`.
 
-## 2. Network, DNS and Remote Access
+## 2. Networking, DNS and Remote Access
 
 The current network uses an ASUS RT-BE88U as the router. Proxmox connects through a VLAN-aware `vmbr0`, while host management remains on the native/untagged trusted network.
 
-Current network model:
+Network segmentation model:
 
 ```text
-Native / untagged -> trusted management LAN (192.168.50.0/24)
+Native / untagged -> trusted management LAN
 VLAN 10           -> Guest / Public
 VLAN 20           -> IoT
 VLAN 30           -> Home
 VLAN 40           -> Internal servers
 ```
-
-There is intentionally no VLAN 50.
 
 The Proxmox uplink carries the native network plus tagged VLANs 10, 20, 30 and 40. The VLAN-aware bridge configuration is intentionally maintained as manual host/network state because breaking that path can remove management access to the hypervisor.
 
@@ -144,30 +127,28 @@ ASUS RT-BE88U
           +-- games01
 ```
 
-### 2a. Public IP and Port Forwarding
+### 2.1. Public IP and Port Forwarding
 
 Proxmox VE itself does not require a public IP address. A publicly reachable address is needed only if you intentionally expose services directly from your home connection or want direct inbound WireGuard connectivity.
 
 Current direct publication forwards **TCP and UDP 443** to Traefik on `core01`, never to `pve01`. The current ingress uses DNS-01 ACME, so it does not require an inbound TCP 80 listener.
 
 | Service | External port | Target | Protocol | Status |
-|---|---:|---|---|---|
+| --- | ---: | --- | --- | --- |
 | HTTPS / HTTP/3 | 443 | `core01` / Traefik | TCP/UDP | Active |
 | WireGuard | router-defined | ASUS router | UDP | Active; private administration |
 | Minecraft Java | 25565 | `games01` | TCP | Not published; future workload |
-
-The planned OVH `edge01` / WireGuard / local `transit01` transport has **not** replaced the current router forwarding.
 
 > [!IMPORTANT]
 > Port forwarding must target the workload that actually serves the traffic. Never forward the Proxmox Web UI, SSH or console-management ports from the Internet.
 
 If the ISP address is dynamic, DDNS can keep public records synchronized.
 
-### 2b. DNS
+### 2.2. DNS
 
 Public and private DNS should remain separate concerns.
 
-The deployed local DNS service is ***[Technitium DNS Server](https://technitium.com/dns/)*** on `core01`. Trusted clients use it for managed local resolution; other VLANs currently retain their router/default DNS behavior.
+The deployed local DNS service is **[Technitium DNS Server](https://technitium.com/dns/)** on `core01`. Trusted clients use it for managed local resolution; other VLANs currently retain their router/default DNS behavior.
 
 A practical naming model is still:
 
@@ -178,15 +159,15 @@ host.mgmt.your-domain.tld
 host.lab.your-domain.tld
 ```
 
-The exact private domain naming is environment-specific and should not be hardcoded into a public guide unless necessary.
+Private domain names can follow the same structure while remaining independent of public DNS records.
 
 During the earliest Proxmox/OpenTofu bootstrap, do not make provider access depend on a DNS VM that does not exist yet. Bootstrap name resolution and Proxmox CA trust should work independently of Technitium.
 
-### 2c. VPN
+### 2.3. VPN
 
-Remote management uses ***[WireGuard](https://www.wireguard.com/)*** on the ASUS router.
+Remote management uses **[WireGuard](https://www.wireguard.com/)** on the ASUS router.
 
-This is an important change from the older plan: there is **no dedicated VPN VM/LXC** in production v1.
+Keeping WireGuard on the router avoids an additional VM or LXC container solely for VPN access.
 
 WireGuard is used for access to services that should remain private, such as:
 
@@ -202,27 +183,27 @@ WireGuard is used for access to services that should remain private, such as:
 
 ## 3. Virtual Machines and LXC Containers
 
-The current design keeps `pve01` focused on virtualization. Dedicated host telemetry is planned; application containers do not run there.
+The design keeps `pve01` focused on virtualization; application containers run in guest VMs.
 
-Production v1 intentionally uses **five VMs and zero LXC containers**:
+Production v1 uses **five VMs and zero LXC containers**:
 
-| VMID | Hostname | Internal IP | RAM | Purpose |
-|---:|---|---|---:|---|
-| `110` | `core01` | `192.168.40.10` | 4 GiB | Deployed DNS, ingress, identity, security |
-| `120` | `apps01` | `192.168.40.20` | 6 GiB | Deployed monitoring and log backends |
-| `130` | `media01` | `192.168.40.30` | 4 GiB | Platform ready; media workloads pending |
-| `140` | `home01` | `192.168.40.40` | 4 GiB | Home Assistant OS appliance |
-| `150` | `games01` | `192.168.40.50` | 10 GiB | Platform ready; game workloads pending |
+| VM | RAM | Role |
+| --- | ---: | --- |
+| `core01` | 4 GiB | DNS, ingress, identity and security |
+| `apps01` | 6 GiB | Monitoring and application platform |
+| `media01` | 4 GiB | Media services |
+| `home01` | 4 GiB | Home Assistant OS appliance |
+| `games01` | 10 GiB | Game servers |
 
-The five provisioned production VMs allocate 28 GiB out of 32 GiB. `lab01` (VMID `190`, 4 GiB, `192.168.40.90`) is also provisioned but powered off by default and excluded from the always-on budget. Check real memory headroom before starting it.
+Together, the production VMs reserve 28 GiB out of the host's 32 GiB. The additional `lab01` VM (4 GiB) is used on demand and excluded from the always-on memory budget.
 
-`home01` is an HAOS appliance, **not** an Ansible-managed AlmaLinux guest. Its current OpenTofu configuration has one VLAN 40 interface. Home Assistant onboarding and IoT integrations are still pending; do not assume a VLAN 20 NIC or completed IoT access.
+`home01` runs Home Assistant OS rather than an Ansible-managed AlmaLinux installation. Its VM network interface belongs to the Internal VLAN.
 
 `media01` is planned to use Intel Quick Sync through the i5-11400T iGPU for Jellyfin hardware transcoding. Passthrough should be tested before relying on it in production.
 
 `games01` receives 10 GB RAM because the existing Minecraft server uses an 8 GB Java heap. Do not set Minecraft `-Xmx` equal to all VM memory; the JVM, OS, panel and monitoring also need headroom.
 
-### Virtual Machines
+### 3.1. Virtual Machines
 
 Use VMs when you need strong isolation, a separate kernel, predictable Ansible management, PCI/iGPU passthrough or a consistent container-host operating system.
 
@@ -234,7 +215,7 @@ Proxmox VM -> AlmaLinux 10 -> cloud-init -> Ansible -> Podman
 
 `home01` instead uses `Proxmox VM -> Home Assistant OS -> Supervisor`, with application state managed by HAOS.
 
-### LXC Containers
+### 3.2. LXC Containers
 
 LXC remains a valid Proxmox tool, but it is not currently used in production v1.
 
@@ -245,16 +226,12 @@ Running Podman inside LXC would introduce nested-container/runtime behavior and 
 
 ## 4. Infrastructure as Code
 
-The current architecture is managed in a separate repository:
-
-**[PoProstuWitold/homelab-infra](https://github.com/PoProstuWitold/homelab-infra)**
-
-The host foundation, production VM definitions, Linux guest baselines and core/observability services are implemented. The remaining application workloads and edge-network migration are future work.
+The `homelab-infra` repository contains the automation for platform provisioning, Linux guest configuration and application deployment. Infrastructure and application responsibilities remain separated, making changes easier to review, test and reproduce.
 
 The toolchain is divided by responsibility:
 
 | Tool | Responsibility |
-|---|---|
+| --- | --- |
 | **OpenTofu** | Pinned cloud image, AlmaLinux template and VM lifecycle |
 | **Ansible** | Proxmox host, AlmaLinux guests and deployed service configuration |
 | **cloud-init** | First-boot user, SSH and network bootstrap |
@@ -288,13 +265,13 @@ VictoriaMetrics / VictoriaLogs / Grafana verification
 
 The router VLAN policy and the physical Proxmox bridge remain intentionally outside normal OpenTofu/Ansible convergence. Per-VM VLAN tags belong in OpenTofu.
 
-Current backups use native Proxmox VZDump to a dedicated external ext4 filesystem mounted at `/mnt/pve/backup`. The scheduled policy is backup-by-default, excluding the reproducible template and disposable `lab01`. Specific nonessential data disks are also excluded as described in the [infrastructure architecture](https://github.com/PoProstuWitold/homelab-infra/blob/main/docs/architecture.md).
+Native Proxmox VZDump backups are stored on a dedicated external ext4 filesystem mounted at `/mnt/pve/backup`. The policy backs up production guests by default, with explicit exclusions for reproducible templates and disposable lab VMs.
 
 ## 5. Services
 
 Services are grouped by VM rather than giving every container its own guest.
 
-### Core Infrastructure
+### 5.1. Core Infrastructure
 
 Currently deployed on `core01`:
 
@@ -305,35 +282,33 @@ Currently deployed on `core01`:
 
 WireGuard is not listed here because it runs on the ASUS router, not in a VM.
 
-### Monitoring and Observability
+### 5.2. Monitoring and Observability
 
 The observability backends run on `apps01`:
 
 - **[Grafana](https://grafana.com/)** - dashboards and visualization.
-- **[VictoriaMetrics](https://victoriametrics.com/)** Single - metrics storage/backend.
-- **[VictoriaLogs](https://victoriametrics.com/products/victorialogs/)** Single - log storage/search backend.
+- **[VictoriaMetrics Single](https://victoriametrics.com/)** - metrics storage and querying.
+- **[VictoriaLogs Single](https://victoriametrics.com/products/victorialogs/)** - log storage and search.
 
 Current telemetry includes an Alloy agent on `core01` and the central receiver on `apps01`. Metrics and selected operational logs flow to VictoriaMetrics/VictoriaLogs; Grafana queries those backends.
 
-Further host agents/exporters (including `pve01` and other workload guests), focused dashboards and notifications are **planned**, not yet deployed. The selected future approach includes Alloy host metrics, Podman exporters and storage health telemetry.
+Planned extensions include host agents/exporters, workload dashboards, notifications, Podman metrics and storage health telemetry.
 
-### Files and Storage
+### 5.3. Files and Storage
 
-Planned for `apps01` (not yet deployed):
+Planned for `apps01`:
 
 - **[OpenCloud](https://opencloud.eu/)** - selfhosted cloud file platform.
 
-The previous SFTPGo/FileBrowser alternatives are not part of the current v1 service list.
+### 5.4. Development
 
-### Development
-
-Planned for `apps01` (not yet deployed):
+Planned for `apps01`:
 
 - **[Forgejo](https://forgejo.org/)** - selfhosted Git forge.
 
-### Media
+### 5.5. Media
 
-Planned for `media01` (not yet deployed):
+Planned for `media01`:
 
 - **[Jellyfin](https://jellyfin.org/)** - media server, with planned Intel Quick Sync transcoding.
 - **[Seerr](https://github.com/seerr-team/seerr)** - media request/discovery manager.
@@ -343,17 +318,17 @@ Planned for `media01` (not yet deployed):
 - **[Sonarr](https://sonarr.tv/)** - TV series collection manager.
 - **[Lidarr](https://lidarr.audio/)** - music collection manager.
 
-### Home Automation
+### 5.6. Home Automation
 
-`home01` runs Home Assistant OS and its appliance runtime, including Home Assistant. Onboarding and other integrations are still in progress:
+`home01` runs Home Assistant OS. The home automation stack includes the appliance and planned integrations:
 
-- **[Home Assistant](https://www.home-assistant.io/)** - appliance runtime deployed; setup/integration pending.
-- **[Mosquitto](https://mosquitto.org/)** - MQTT broker.
-- **[Zigbee2MQTT](https://www.zigbee2mqtt.io/)** - Zigbee-to-MQTT bridge.
+- **[Home Assistant](https://www.home-assistant.io/)** - deployed home automation platform.
+- **[Mosquitto](https://mosquitto.org/)** - planned MQTT broker.
+- **[Zigbee2MQTT](https://www.zigbee2mqtt.io/)** - planned Zigbee-to-MQTT bridge.
 
 The current Zigbee coordinator is network/Ethernet based, so USB passthrough is not required for that coordinator design.
 
-### Other Services
+### 5.7. Other Services
 
 Planned general apps on `apps01`:
 
@@ -365,14 +340,12 @@ Planned general apps on `apps01`:
 
 Planned game services on `games01`:
 
-- **[GameAP](https://gameap.com/)** - proposed game server panel; PoC pending.
+- **[GameAP](https://gameap.com/)** - game server management panel under evaluation.
 - Minecraft - expected to run nearly continuously with an approximately 8 GB maximum Java heap.
 
-GameAP 4 with rootless Podman is the current PoC plan. Its integration, lifecycle, permissions, persistence and backup/restore behavior must be validated before production exposure.
+GameAP 4 with rootless Podman is the selected proof-of-concept approach; evaluation covers service lifecycle, permissions, persistence and recovery.
 
 ## 6. Backups and Disaster Recovery
-
-The current backup design is already more concrete than the previous version of this guide.
 
 `pve01` has a dedicated external 2 TB SSD registered as Proxmox storage `backup` and mounted at:
 
@@ -385,15 +358,15 @@ The mount is validated fail-closed. If the expected filesystem is not present, P
 Current scheduled VZDump policy:
 
 ```text
-schedule:      daily at 03:00
+schedule:      daily
 mode:          snapshot
 compression:   zstd
-selection:     all guests by default
-exclude:       reproducible template (VMID 9000) and on-demand lab01 (VMID 190)
+selection:     production guests by default
+exclude:       reproducible templates and on-demand lab VMs
 retention:     keep-last=2, keep-daily=7, keep-weekly=4, keep-monthly=3
 ```
 
-The reference AlmaLinux VM has already completed a destructive restore drill: it was backed up, removed outside OpenTofu, restored under the original VMID, verified with SSH/QEMU Guest Agent/Ansible, and reconciled by OpenTofu with no drift.
+Recovery has been tested with an AlmaLinux VM: the VM was backed up, removed, restored under its original VMID, checked with SSH, QEMU Guest Agent and Ansible, and reconciled with OpenTofu without configuration drift.
 
 Production stateful VMs remain included in the backup-by-default policy. The disposable/on-demand `lab01` is excluded because its state is not treated as persistent.
 
@@ -402,27 +375,19 @@ VM-level backups are not the only layer required for irreplaceable data. Applica
 > [!IMPORTANT]
 > A successful backup job is not proof of recoverability. Periodically perform real restores and verify both VM boot and application-level persistent data.
 
-
 ## 7. Security Controls and Verification
 
-The separate [`homelab-infra`](https://github.com/PoProstuWitold/homelab-infra) repository contains the actual security configuration, automation and checks. The table below links to implementation evidence rather than treating a list of installed applications as proof of security.
+Security is part of the infrastructure design, from isolated workloads and restricted management access to repeatable configuration checks.
 
-| Control | Implemented approach | Configuration / verification |
+| Area | Controls | Verification |
 | --- | --- | --- |
-| Host and guest hardening | SSH key authentication, root-login restrictions, SELinux for managed AlmaLinux guests, security updates | [`proxmox_host`](https://github.com/PoProstuWitold/homelab-infra/tree/main/ansible/roles/platform/proxmox_host), [`guest_baseline`](https://github.com/PoProstuWitold/homelab-infra/tree/main/ansible/roles/platform/guest_baseline) |
-| Firewalls and segmentation | VLAN-aware bridge, Proxmox `INPUT DROP`, restricted management sources, guest `firewalld` policies and reachability checks | [`proxmox_firewall`](https://github.com/PoProstuWitold/homelab-infra/tree/main/ansible/roles/platform/proxmox_firewall), [`guest_firewall`](https://github.com/PoProstuWitold/homelab-infra/tree/main/ansible/roles/platform/guest_firewall) |
-| Identity and secrets | Proxmox RBAC and limited OpenTofu API identity, Authentik identity service, SOPS + age encrypted deployment values | [`Proxmox RBAC`](https://github.com/PoProstuWitold/homelab-infra/blob/main/ansible/roles/platform/proxmox_host/tasks/rbac.yml), [`authentik`](https://github.com/PoProstuWitold/homelab-infra/blob/main/docs/services/authentik.md) |
-| HTTP ingress protection | TLS with DNS-01, route-level exposure policy, CrowdSec LAPI remediation and AppSec inspection | [`traefik`](https://github.com/PoProstuWitold/homelab-infra/blob/main/docs/services/traefik.md), [`crowdsec`](https://github.com/PoProstuWitold/homelab-infra/blob/main/docs/services/crowdsec.md), [`live verification`](https://github.com/PoProstuWitold/homelab-infra/blob/main/ansible/roles/services/crowdsec_traefik_bouncer/tasks/verify-live.yml) |
-| Monitoring and recovery | Central metrics/log storage, selected Alloy collection, VZDump retention with fail-closed external mount and a VM restore drill | [`architecture`](https://github.com/PoProstuWitold/homelab-infra/blob/main/docs/architecture.md), [`observability`](https://github.com/PoProstuWitold/homelab-infra/blob/main/docs/services/observability.md) |
-| Automation integrity | Encrypted source secrets, lint/format/policy checks, Gitleaks and pinned container images | [`validation workflow`](https://github.com/PoProstuWitold/homelab-infra/blob/main/.github/workflows/validate.yml), [`security policy`](https://github.com/PoProstuWitold/homelab-infra/blob/main/SECURITY.md) |
+| Host and guest hardening | SSH key authentication, restricted root access, SELinux on AlmaLinux and security updates | SSH and privilege checks, SELinux state verification |
+| Network security | VLAN segmentation, Proxmox `INPUT DROP`, management allowlists and guest `firewalld` policies | Firewall rule checks and cross-network reachability tests |
+| Identity and secrets | Proxmox RBAC, least-privilege automation accounts, Authentik and SOPS + age | Access control checks and encrypted secret handling |
+| Ingress | DNS-01 TLS certificates, route exposure policy, CrowdSec remediation and AppSec inspection | TLS, route policy and request-based security checks |
+| Observability and recovery | Central metrics and logs, Alloy telemetry, VZDump retention and fail-closed backup storage | Telemetry checks, backup validation and a VM restore exercise |
+| Infrastructure automation | Versioned provisioning, linting, policy checks, Gitleaks and pinned container images | Automated repository validation and configuration verifiers |
 
-### Validation model
+### 7.1. Validation Workflow
 
-Infrastructure changes pass through explicit ownership boundaries: review and validate the change, apply it with the appropriate tool, then run independent Ansible verifiers where available. Ingress validation includes checks of route exposure, TLS and request-driven CrowdSec/AppSec behavior. A green configuration test **does not** replace an audit or prove that every possible attack is blocked.
-
-### Current limitations
-
-- Additional monitoring agents, alerting, off-host application-aware backups and the OVH edge migration remain future work.
-- LUKS2/VeraCrypt on personal operator devices are outside this server Infrastructure-as-Code repository and are not claimed here as server-side controls.
-
-For the authoritative implementation status, consult [`docs/architecture.md`](https://github.com/PoProstuWitold/homelab-infra/blob/main/docs/architecture.md) and [`todo.md`](https://github.com/PoProstuWitold/homelab-infra/blob/main/todo.md) in the infrastructure repository.
+Infrastructure changes follow a repeatable process: validate the configuration, apply it through the appropriate automation tool, and verify the resulting system state. Ingress checks cover route exposure, TLS behavior and CrowdSec/AppSec responses; recovery checks include restoring a VM rather than relying on backup job results alone.
