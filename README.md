@@ -9,7 +9,7 @@ The repository currently contains three setups:
 
 | Setup | Status | Description |
 | --- | --- | --- |
-| **[Proxmox VE](proxmox)** | Current / active development | Current Hestia architecture: Proxmox VE, AlmaLinux VMs, Podman, VLANs, WireGuard on the router and Infrastructure as Code |
+| **[Proxmox VE](proxmox)** | Current / partially deployed | Architecture: Proxmox VE 9, AlmaLinux VMs, Home Assistant OS, Podman, VLANs and Infrastructure as Code |
 | **[Port Forwarding](ports)** | Stable / legacy | Previous bare-metal AlmaLinux + Docker architecture with direct port forwarding and reverse proxying |
 | **[Cloudflare Tunnels](tunnels)** | Legacy | Older Cloudflare Tunnel architecture without directly exposing inbound web ports |
 
@@ -99,19 +99,19 @@ The legacy **[Cloudflare Tunnels](tunnels)** and **[Port Forwarding](ports)** gu
 
 #### Proxmox VE
 
-The current **[Proxmox VE](proxmox)** setup runs Proxmox directly on bare metal. Application workloads run in AlmaLinux VMs and are containerized with Podman. The Proxmox host itself stays minimal and does not run normal application containers.
+The current **[Proxmox VE](proxmox)** setup runs Proxmox directly on bare metal. Managed Linux workloads run in AlmaLinux VMs with Podman; Home Assistant runs as a separate Home Assistant OS appliance. The Proxmox host itself stays minimal and does not run normal application containers.
 
-The current production v1 design uses five always-on VMs:
+The deployed production v1 topology defines five always-on VMs:
 
 ```text
-core01    3 GB
-apps01    6 GB
-media01   4 GB
-home01    2 GB
-games01  10 GB
+core01    4 GiB  AlmaLinux - DNS, ingress, identity and security
+apps01    6 GiB  AlmaLinux - monitoring and application platform
+media01   4 GiB  AlmaLinux - media platform (workloads pending)
+home01    4 GiB  Home Assistant OS
+games01  10 GiB  AlmaLinux - game platform (workloads pending)
 ```
 
-An on-demand `lab01` is planned only when host memory headroom allows it.
+`lab01` is a provisioned, on-demand 4 GiB AlmaLinux validation VM, not part of the always-on 28 GiB allocation. See the [current deployment status](proxmox/#3-virtual-machines-and-lxc-containers).
 
 #### Remote Access Requirements
 
@@ -136,24 +136,22 @@ The current Proxmox architecture can expose selected public applications through
 └── proxmox/     # Current Proxmox + VM + Podman architecture
 ```
 
-The legacy guides remain useful as reference implementations, but only the Proxmox section represents the current Hestia architecture.
+The legacy guides remain useful as reference implementations, but only the Proxmox section represents the current architecture.
 
 ## Infrastructure as Code
 
 Infrastructure automation for the Proxmox setup is maintained separately in **[PoProstuWitold/homelab-infra](https://github.com/PoProstuWitold/homelab-infra)**.
 
-The current infrastructure repository already covers the validated host foundation:
+The current infrastructure repository contains the deployed platform foundation, five production VMs and security-focused service configuration:
 
-- Proxmox host baseline and SSH hardening with Ansible
-- nftables-based `proxmox-firewall` management policy
-- least-privilege OpenTofu identity and API token metadata
-- SOPS + hybrid post-quantum age secret handling
-- pinned AlmaLinux 10 cloud image and reusable VM template
-- reference VM provisioning and Ansible guest baseline
-- VLAN 40 guest networking
-- fail-closed external backup storage
-- scheduled VZDump retention policy
-- destructive VM backup/restore validation
-- pre-commit and Gitleaks repository safeguards
+- **Host and guest hardening:** SSH key-only authentication, restricted root access, SELinux on AlmaLinux, security updates and configuration verifiers.
+- **Network security:** VLAN segmentation, Proxmox `INPUT DROP` management firewall and fail-closed guest `firewalld` policies.
+- **Identity and secrets:** separate human/automation identities, least-privilege Proxmox API access, Authentik and SOPS + age encrypted machine secrets.
+- **Ingress protection:** Traefik on `core01`, DNS-01 TLS certificates, CrowdSec detection, AppSec inspection, live remediation decisions and restricted management routes.
+- **Visibility:** VictoriaMetrics, VictoriaLogs, Grafana and Alloy components; additional agents, dashboards and alerts remain in progress.
+- **Recovery and repository checks:** dedicated fail-closed VZDump storage, retention, a tested VM restore, pre-commit, Gitleaks and CI validation.
 
-The production five-VM topology and service placement are now defined. Production VM provisioning and service migration are the next implementation phase.
+`core01` currently runs DNS, ingress, identity and security services. `apps01` runs the observability backends; `media01` and `games01` still await their application workloads. The full implementation status and evidence links are in [Proxmox security and verification](proxmox/#7-security-controls-and-verification). Future work is tracked in the [infrastructure roadmap](https://github.com/PoProstuWitold/homelab-infra/blob/main/todo.md).
+
+> [!NOTE]
+> This repository is an architecture and setup guide. The separate `homelab-infra` repository contains the actual Ansible/OpenTofu implementation and verifiers. Only the explicitly listed services are currently deployed; a documented design is not evidence of a running service.
